@@ -19,6 +19,6 @@ jobs:
           username: ${{ secrets.FTP_USER }}  # FTP username stored in GitHub Secrets
           password: ${{ secrets.FTP_PASSWORD }} # FTP password stored in GitHub Secrets
           local-dir: ./                        # Local directory to upload
-          server-dir: /htdocs/                 # Destination directory on InfinityFree
+          server-dir: /htdocs/wordpress/wp-content/themes/new-horizon-developments                 # Destination directory on InfinityFree
           protocol: ftps                       # FTPS is more secure than FTP
           dry-run: false                       # Set to true to test first without uploading
