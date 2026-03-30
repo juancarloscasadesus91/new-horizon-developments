@@ -1,9 +1,10 @@
-name: Deploy to InfinityFree
+
+name: Safe Deploy to InfinityFree
 
 on:
   push:
     branches:
-      - main  # Trigger deployment only on push to main
+      - main  # Trigger deployment only on main branch
 
 jobs:
   ftp-deploy:
@@ -12,16 +13,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Deploy via FTP
+      - name: Backup current /htdocs/ on server
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: ftpupload.net               # Your InfinityFree FTP server
-          username: ${{ secrets.FTP_USER }}  # FTP username stored in GitHub Secrets
-          password: ${{ secrets.FTP_PASSWORD }} # FTP password stored in GitHub Secrets
-          local-dir: ./                    # Local folder to upload (only your source code)
-          server-dir: /htdocs/wordpress/wp-content/themes/new-horizon-developments/                # Destination folder on InfinityFree
-          protocol: ftps                       # Use FTPS (more secure than FTP)
-          passive: true                        # Enable passive mode for more stable connection
-          dry-run: false                        # Set true to test first without uploading
-          timeout: 600                          # Increase timeout for slower connections
-          exclude: .git,node_modules,.github   # Exclude unnecessary folders/files
+          server: ftpupload.net
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: /dev/null   # No local files, just trigger server connection
+          server-dir: /htdocs/wordpress/wp-content/themes/new-horizon-developments/     # Remote folder to backup
+          remote-backup-dir: /htdocs_backup/  # Destination backup folder
+          protocol: ftps
+          passive: true
+          dry-run: false
+          timeout: 600
+
+      - name: Deploy source code
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ftpupload.net
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./src          # Only your source code
+          server-dir: /htdocs/      # Destination folder
+          protocol: ftps
+          passive: true
+          dry-run: false
+          timeout: 600
+          exclude: .git,node_modules,.github,tests,assets
