@@ -1,0 +1,24 @@
+name: Deploy to InfinityFree
+
+on:
+  push:
+    branches:
+      - main  # Trigger only on push to main branch
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ftpupload.net               # Your InfinityFree FTP server
+          username: ${{ secrets.FTP_USER }}  # FTP username stored in GitHub Secrets
+          password: ${{ secrets.FTP_PASSWORD }} # FTP password stored in GitHub Secrets
+          local-dir: ./                        # Local directory to upload
+          server-dir: /htdocs/                 # Destination directory on InfinityFree
+          protocol: ftps                       # FTPS is more secure than FTP
+          dry-run: false                       # Set to true to test first without uploading
