@@ -19,7 +19,7 @@ jobs:
           server: ftpupload.net
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: /dev/null   # No local files, just trigger server connection
+          local-dir: /dev/null/   # No local files, just trigger server connection
           server-dir: /htdocs/wordpress/wp-content/themes/new-horizon-developments/     # Remote folder to backup
           remote-backup-dir: /htdocs_backup/  # Destination backup folder
           protocol: ftps
