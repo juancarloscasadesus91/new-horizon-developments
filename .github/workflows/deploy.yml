@@ -21,8 +21,9 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           server-dir: /htdocs/wordpress/wp-content/themes/new-horizon-developments/
-          protocol: ftps
+          protocol: ftp
           port: 21
+          security: loose
           log-level: verbose
           exclude: |
             **/.git*
