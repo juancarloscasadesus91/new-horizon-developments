@@ -1,5 +1,5 @@
 
-name: Safe Deploy to InfinityFree
+name: Deploy to InfinityFree
 
 on:
   push:
@@ -13,30 +13,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Backup current /htdocs/ on server
+      - name: Deploy theme to InfinityFree
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
           server: ftpupload.net
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: /dev/null/   # No local files, just trigger server connection
-          server-dir: /htdocs/wordpress/wp-content/themes/new-horizon-developments/     # Remote folder to backup
-          remote-backup-dir: /htdocs_backup/  # Destination backup folder
+          local-dir: ./
+          server-dir: /htdocs/wordpress/wp-content/themes/new-horizon-developments/
           protocol: ftps
-          passive: true
-          dry-run: false
-          timeout: 600
-
-      - name: Deploy source code
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
-        with:
-          server: ftpupload.net
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./src          # Only your source code
-          server-dir: /htdocs/      # Destination folder
-          protocol: ftps
-          passive: true
-          dry-run: false
-          timeout: 600
-          exclude: .git,node_modules,.github,tests,assets
+          port: 21
+          log-level: verbose
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.github/**
+            **/tests/**
+            **/.vscode/**
+            **/.idea/**
+            **/README.md
