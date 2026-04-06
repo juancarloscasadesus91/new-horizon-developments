@@ -284,7 +284,7 @@ get_header();
                 <h3><?php esc_html_e('Contact Information', 'timber-homes'); ?></h3>
                 
                 <?php
-                $address = get_theme_mod('timber_homes_address', '1234 Timber Lane, Denver, CO 80202');
+                $address = get_theme_mod('timber_homes_address', '123 Main Street, Denver, CO 80202');
                 $phone = get_theme_mod('timber_homes_phone', '+1 (555) 123-4567');
                 $email = get_theme_mod('timber_homes_email', 'info@timberhomes.com');
                 $whatsapp = get_theme_mod('timber_homes_whatsapp', '15551234567');

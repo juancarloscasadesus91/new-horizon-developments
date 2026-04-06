@@ -424,7 +424,7 @@ function new_horizon_customize_register($wp_customize) {
 
     // Address
     $wp_customize->add_setting('new_horizon_address', array(
-        'default'           => '1234 Timber Lane, Denver, CO 80202',
+        'default'           => '123 Main Street, Denver, CO 80202',
         'sanitize_callback' => 'sanitize_textarea_field',
     ));
 

@@ -1,23 +1,23 @@
 <?php
 /**
- * Script para crear proyectos de ejemplo
- * INSTRUCCIONES: 
- * 1. Sube este archivo al directorio del tema
- * 2. Accede a: tu-sitio.com/wp-content/themes/new-horizon-developments/create-sample-projects.php
- * 3. Los proyectos se crearán automáticamente
- * 4. ELIMINA este archivo después de usarlo por seguridad
+ * Script to create sample projects
+ * INSTRUCTIONS: 
+ * 1. Upload this file to the theme directory
+ * 2. Access: your-site.com/wp-content/themes/new-horizon-developments/create-sample-projects.php
+ * 3. Projects will be created automatically
+ * 4. DELETE this file after use for security
  */
 
-// Cargar WordPress
+// Load WordPress
 $parse_uri = explode('wp-content', $_SERVER['SCRIPT_FILENAME']);
 require_once($parse_uri[0] . 'wp-load.php');
 
-// Verificar que el usuario esté logueado y sea administrador
+// Verify user is logged in and is administrator
 if (!is_user_logged_in() || !current_user_can('manage_options')) {
-    die('Acceso denegado. Debes estar logueado como administrador.');
+    die('Access denied. You must be logged in as administrator.');
 }
 
-// Proyectos de ejemplo
+// Sample projects
 $sample_projects = array(
     array(
         'title' => "Eagle's Nest",
@@ -73,7 +73,7 @@ $created_count = 0;
 $theme_dir = get_template_directory_uri();
 
 foreach ($sample_projects as $project) {
-    // Crear el post
+    // Create the post
     $post_id = wp_insert_post(array(
         'post_title'   => $project['title'],
         'post_content' => $project['description'],
@@ -83,23 +83,23 @@ foreach ($sample_projects as $project) {
     ));
     
     if ($post_id) {
-        // Agregar meta datos
+        // Add meta data
         update_post_meta($post_id, '_project_location', $project['location']);
         update_post_meta($post_id, '_project_size', $project['size']);
         update_post_meta($post_id, '_project_year', $project['year']);
-        update_post_meta($post_id, '_project_featured', '1'); // Marcar como destacado
+        update_post_meta($post_id, '_project_featured', '1'); // Mark as featured
         
-        // Intentar agregar la imagen como featured image
+        // Try to add the image as featured image
         $image_path = get_template_directory() . '/images/' . $project['image'];
         if (file_exists($image_path)) {
             $upload_dir = wp_upload_dir();
             $filename = basename($image_path);
             $new_file = $upload_dir['path'] . '/' . $filename;
             
-            // Copiar imagen a uploads
+            // Copy image to uploads
             copy($image_path, $new_file);
             
-            // Crear attachment
+            // Create attachment
             $attachment = array(
                 'post_mime_type' => 'image/jpeg',
                 'post_title'     => $project['title'],
@@ -109,12 +109,12 @@ foreach ($sample_projects as $project) {
             
             $attach_id = wp_insert_attachment($attachment, $new_file, $post_id);
             
-            // Generar metadata
+            // Generate metadata
             require_once(ABSPATH . 'wp-admin/includes/image.php');
             $attach_data = wp_generate_attachment_metadata($attach_id, $new_file);
             wp_update_attachment_metadata($attach_id, $attach_data);
             
-            // Establecer como featured image
+            // Set as featured image
             set_post_thumbnail($post_id, $attach_id);
         }
         
@@ -122,10 +122,10 @@ foreach ($sample_projects as $project) {
     }
 }
 
-echo "<h1>✅ Proyectos de Ejemplo Creados</h1>";
-echo "<p>Se crearon <strong>{$created_count}</strong> proyectos de ejemplo exitosamente.</p>";
-echo "<p><a href='" . admin_url('edit.php?post_type=project') . "'>Ver Proyectos en el Admin</a></p>";
-echo "<p><a href='" . home_url() . "'>Ver Homepage</a></p>";
+echo "<h1>✅ Sample Projects Created</h1>";
+echo "<p><strong>{$created_count}</strong> sample projects were created successfully.</p>";
+echo "<p><a href='" . admin_url('edit.php?post_type=project') . "'>View Projects in Admin</a></p>";
+echo "<p><a href='" . home_url() . "'>View Homepage</a></p>";
 echo "<hr>";
-echo "<p style='color: red;'><strong>IMPORTANTE:</strong> Por seguridad, elimina este archivo (create-sample-projects.php) después de usarlo.</p>";
+echo "<p style='color: red;'><strong>IMPORTANT:</strong> For security, delete this file (create-sample-projects.php) after use.</p>";
 ?>
