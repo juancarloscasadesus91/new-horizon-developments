@@ -474,3 +474,129 @@ function new_horizon_customize_register($wp_customize) {
     }
 }
 add_action('customize_register', 'new_horizon_customize_register');
+
+/**
+ * Custom Post Type: Team Members
+ */
+function new_horizon_register_team_post_type() {
+    $labels = array(
+        'name'               => _x('Team Members', 'post type general name', 'new-horizon'),
+        'singular_name'      => _x('Team Member', 'post type singular name', 'new-horizon'),
+        'menu_name'          => _x('Team', 'admin menu', 'new-horizon'),
+        'add_new'            => _x('Add New', 'team member', 'new-horizon'),
+        'add_new_item'       => __('Add New Team Member', 'new-horizon'),
+        'new_item'           => __('New Team Member', 'new-horizon'),
+        'edit_item'          => __('Edit Team Member', 'new-horizon'),
+        'view_item'          => __('View Team Member', 'new-horizon'),
+        'all_items'          => __('All Team Members', 'new-horizon'),
+        'search_items'       => __('Search Team Members', 'new-horizon'),
+        'not_found'          => __('No team members found.', 'new-horizon'),
+        'not_found_in_trash' => __('No team members found in Trash.', 'new-horizon'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array('slug' => 'team'),
+        'capability_type'    => 'post',
+        'has_archive'        => false,
+        'hierarchical'       => false,
+        'menu_position'      => 6,
+        'menu_icon'          => 'dashicons-groups',
+        'supports'           => array('title', 'editor', 'thumbnail'),
+        'show_in_rest'       => true,
+    );
+
+    register_post_type('team_member', $args);
+}
+add_action('init', 'new_horizon_register_team_post_type');
+
+/**
+ * Add Team Member Meta Boxes
+ */
+function new_horizon_add_team_meta_boxes() {
+    add_meta_box(
+        'team_member_details',
+        __('Team Member Details', 'new-horizon'),
+        'new_horizon_team_member_details_callback',
+        'team_member',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'new_horizon_add_team_meta_boxes');
+
+function new_horizon_team_member_details_callback($post) {
+    wp_nonce_field('new_horizon_save_team_member_details', 'new_horizon_team_member_details_nonce');
+    
+    $position = get_post_meta($post->ID, '_team_position', true);
+    $email = get_post_meta($post->ID, '_team_email', true);
+    $phone = get_post_meta($post->ID, '_team_phone', true);
+    $order = get_post_meta($post->ID, '_team_order', true);
+    ?>
+    <p>
+        <label for="team_position"><strong><?php _e('Position/Title:', 'new-horizon'); ?></strong></label><br>
+        <input type="text" id="team_position" name="team_position" value="<?php echo esc_attr($position); ?>" style="width: 100%;" placeholder="e.g., Founder & CEO">
+    </p>
+    <p>
+        <label for="team_email"><strong><?php _e('Email:', 'new-horizon'); ?></strong></label><br>
+        <input type="email" id="team_email" name="team_email" value="<?php echo esc_attr($email); ?>" style="width: 100%;" placeholder="email@example.com">
+    </p>
+    <p>
+        <label for="team_phone"><strong><?php _e('Phone:', 'new-horizon'); ?></strong></label><br>
+        <input type="text" id="team_phone" name="team_phone" value="<?php echo esc_attr($phone); ?>" style="width: 100%;" placeholder="+1 (555) 123-4567">
+    </p>
+    <p>
+        <label for="team_order"><strong><?php _e('Display Order:', 'new-horizon'); ?></strong></label><br>
+        <input type="number" id="team_order" name="team_order" value="<?php echo esc_attr($order ? $order : 0); ?>" style="width: 100px;" min="0">
+        <br><em><?php _e('Lower numbers appear first. Use 0, 1, 2, 3, etc.', 'new-horizon'); ?></em>
+    </p>
+    <p>
+        <strong><?php _e('Biography:', 'new-horizon'); ?></strong><br>
+        <em><?php _e('Use the main content editor above to add the team member\'s biography. This will appear in the overlay on hover.', 'new-horizon'); ?></em>
+    </p>
+    <p>
+        <strong><?php _e('Photo:', 'new-horizon'); ?></strong><br>
+        <em><?php _e('Set the Featured Image as the team member\'s photo. Recommended size: 600x800px (3:4 ratio).', 'new-horizon'); ?></em>
+    </p>
+    <?php
+}
+
+function new_horizon_save_team_member_details($post_id) {
+    if (!isset($_POST['new_horizon_team_member_details_nonce'])) {
+        return;
+    }
+    
+    if (!wp_verify_nonce($_POST['new_horizon_team_member_details_nonce'], 'new_horizon_save_team_member_details')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    if (isset($_POST['team_position'])) {
+        update_post_meta($post_id, '_team_position', sanitize_text_field($_POST['team_position']));
+    }
+    
+    if (isset($_POST['team_email'])) {
+        update_post_meta($post_id, '_team_email', sanitize_email($_POST['team_email']));
+    }
+    
+    if (isset($_POST['team_phone'])) {
+        update_post_meta($post_id, '_team_phone', sanitize_text_field($_POST['team_phone']));
+    }
+    
+    if (isset($_POST['team_order'])) {
+        update_post_meta($post_id, '_team_order', intval($_POST['team_order']));
+    }
+}
+add_action('save_post_team_member', 'new_horizon_save_team_member_details');

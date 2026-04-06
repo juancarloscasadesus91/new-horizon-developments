@@ -51,21 +51,24 @@
                 ?>
             </nav>
 
-            <!-- Header CTA -->
-            <div class="header-cta">
-                <?php
-                $phone = get_theme_mod('timber_homes_phone', '+1 (555) 123-4567');
-                ?>
-                <a href="tel:<?php echo esc_attr(str_replace(array(' ', '(', ')', '-'), '', $phone)); ?>" class="btn btn-primary">
-                    <i class="fas fa-phone"></i> <?php esc_html_e('Call Us', 'timber-homes'); ?>
-                </a>
-            </div>
+            <!-- Header Right Section -->
+            <div class="header-right">
+                <!-- Header CTA -->
+                <div class="header-cta">
+                    <?php
+                    $phone = get_theme_mod('timber_homes_phone', '+1 (555) 123-4567');
+                    ?>
+                    <a href="tel:<?php echo esc_attr(str_replace(array(' ', '(', ')', '-'), '', $phone)); ?>" class="btn btn-primary">
+                        <i class="fas fa-phone"></i> <?php esc_html_e('Call Us', 'timber-homes'); ?>
+                    </a>
+                </div>
 
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="<?php esc_attr_e('Toggle mobile menu', 'timber-homes'); ?>" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="<?php esc_attr_e('Toggle mobile menu', 'timber-homes'); ?>" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
         </div>
     </header>
