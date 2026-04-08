@@ -2000,6 +2000,261 @@ select:focus {
     outline-offset: 2px;
 }
 
+/* ========================================
+   ABOUT US PAGE STYLES
+======================================== */
+
+/* About Intro Section */
+.about-intro-section {
+    background: var(--color-dark);
+}
+
+.about-intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    align-items: center;
+}
+
+.about-intro-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gold);
+    font-weight: 300;
+}
+
+.about-intro-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: var(--spacing-md);
+}
+
+.about-intro-image img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+/* Difference Cards */
+.difference-card {
+    background: var(--color-dark);
+    padding: var(--spacing-lg);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(201, 169, 97, 0.1);
+}
+
+.difference-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-gold);
+}
+
+.difference-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(201, 169, 97, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-md);
+}
+
+.difference-icon i {
+    font-size: 2rem;
+    color: var(--color-gold);
+}
+
+.difference-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-gold);
+    font-weight: 400;
+}
+
+.difference-card p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+}
+
+/* Values Section */
+.about-values-section {
+    background: var(--color-dark);
+}
+
+.values-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    align-items: center;
+}
+
+.values-text h2 {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gold);
+    font-weight: 300;
+}
+
+.lead-text {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: var(--spacing-lg);
+}
+
+.values-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.value-item {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+}
+
+.value-item i {
+    font-size: 1.5rem;
+    color: var(--color-gold);
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.value-item h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-gold);
+    font-weight: 400;
+}
+
+.value-item p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.values-image img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+}
+
+/* Clients Section */
+.about-clients-section {
+    text-align: center;
+}
+
+.clients-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.clients-description {
+    margin-top: var(--spacing-lg);
+}
+
+.clients-description p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Capabilities */
+.capability-card {
+    background: var(--color-gray-dark);
+    padding: var(--spacing-lg);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(201, 169, 97, 0.1);
+}
+
+.capability-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-gold);
+    background: var(--color-dark);
+}
+
+.capability-card i {
+    font-size: 2.5rem;
+    color: var(--color-gold);
+    margin-bottom: var(--spacing-md);
+    display: block;
+}
+
+.capability-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-gold);
+    font-weight: 400;
+}
+
+.capability-card p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+}
+
+/* About CTA Section */
+.about-cta-section {
+    text-align: center;
+    padding: var(--spacing-xxl) 0;
+}
+
+.cta-content h2 {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gold);
+    font-weight: 300;
+}
+
+.cta-content p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: var(--spacing-lg);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive About Page */
+@media (max-width: 768px) {
+    .about-intro-grid,
+    .values-content-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .about-intro-image img,
+    .values-image img {
+        height: 300px;
+    }
+    
+    .about-intro-content h2,
+    .values-text h2 {
+        font-size: 2rem;
+    }
+    
+    .cta-content h2 {
+        font-size: 2rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     *,

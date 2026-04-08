@@ -521,7 +521,7 @@ function new_horizon_register_services_post_type() {
         'show_ui'            => true,
         'show_in_menu'       => true,
         'query_var'          => true,
-        'rewrite'            => array('slug' => 'services'),
+        'rewrite'            => array('slug' => 'service'),
         'capability_type'    => 'post',
         'has_archive'        => true,
         'hierarchical'       => false,
