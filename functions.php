@@ -15,6 +15,13 @@ if (!defined('ABSPATH')) {
  * Add About Us Page Meta Boxes
  */
 function new_horizon_about_meta_boxes() {
+    // Only show on pages using the About Us template
+    global $post;
+    if (!$post) return;
+    
+    $template = get_post_meta($post->ID, '_wp_page_template', true);
+    if ($template !== 'page-about.php') return;
+    
     add_meta_box(
         'about_intro_section',
         __('About Intro Section', 'new-horizon'),
@@ -61,6 +68,241 @@ function new_horizon_about_meta_boxes() {
     );
 }
 add_action('add_meta_boxes', 'new_horizon_about_meta_boxes');
+
+/**
+ * Add Project Gallery Meta Box
+ */
+function new_horizon_project_gallery_meta_box() {
+    add_meta_box(
+        'project_gallery',
+        __('Project Gallery', 'new-horizon'),
+        'new_horizon_project_gallery_callback',
+        'project',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'new_horizon_project_gallery_meta_box');
+
+/**
+ * Project Gallery Callback
+ */
+function new_horizon_project_gallery_callback($post) {
+    wp_nonce_field('project_gallery_nonce', 'project_gallery_nonce');
+    
+    $gallery_images = get_post_meta($post->ID, '_project_gallery', true);
+    ?>
+    <div class="project-gallery-container">
+        <p><strong><?php _e('Add images to the project gallery:', 'new-horizon'); ?></strong></p>
+        
+        <div id="project-gallery-images" class="project-gallery-images">
+            <?php
+            if ($gallery_images && is_array($gallery_images)) {
+                foreach ($gallery_images as $image_id) {
+                    $image_url = wp_get_attachment_image_url($image_id, 'thumbnail');
+                    if ($image_url) {
+                        ?>
+                        <div class="gallery-image-item" data-id="<?php echo esc_attr($image_id); ?>">
+                            <img src="<?php echo esc_url($image_url); ?>" alt="">
+                            <button type="button" class="remove-gallery-image">&times;</button>
+                        </div>
+                        <?php
+                    }
+                }
+            }
+            ?>
+        </div>
+        
+        <input type="hidden" id="project_gallery_ids" name="project_gallery_ids" value="<?php echo esc_attr(implode(',', $gallery_images ?: array())); ?>">
+        
+        <p>
+            <button type="button" class="button button-primary" id="add-gallery-images">
+                <i class="dashicons dashicons-images-alt2"></i> <?php _e('Add Images to Gallery', 'new-horizon'); ?>
+            </button>
+        </p>
+        
+        <p class="description"><?php _e('Click to add multiple images. You can drag to reorder them.', 'new-horizon'); ?></p>
+    </div>
+    
+    <style>
+        .project-gallery-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            min-height: 100px;
+        }
+        
+        .gallery-image-item {
+            position: relative;
+            cursor: move;
+            border: 2px solid #ddd;
+            background: #fff;
+        }
+        
+        .gallery-image-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .gallery-image-item .remove-gallery-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #dc3232;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            padding: 0;
+        }
+        
+        .gallery-image-item .remove-gallery-image:hover {
+            background: #a00;
+        }
+    </style>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        var galleryFrame;
+        
+        // Add images
+        $('#add-gallery-images').on('click', function(e) {
+            e.preventDefault();
+            
+            if (galleryFrame) {
+                galleryFrame.open();
+                return;
+            }
+            
+            galleryFrame = wp.media({
+                title: '<?php _e('Select Gallery Images', 'new-horizon'); ?>',
+                button: {
+                    text: '<?php _e('Add to Gallery', 'new-horizon'); ?>'
+                },
+                multiple: true
+            });
+            
+            galleryFrame.on('select', function() {
+                var selection = galleryFrame.state().get('selection');
+                var currentIds = $('#project_gallery_ids').val().split(',').filter(Boolean);
+                
+                selection.map(function(attachment) {
+                    attachment = attachment.toJSON();
+                    if (currentIds.indexOf(attachment.id.toString()) === -1) {
+                        currentIds.push(attachment.id);
+                        
+                        var imageHtml = '<div class="gallery-image-item" data-id="' + attachment.id + '">' +
+                            '<img src="' + attachment.sizes.thumbnail.url + '" alt="">' +
+                            '<button type="button" class="remove-gallery-image">&times;</button>' +
+                            '</div>';
+                        
+                        $('#project-gallery-images').append(imageHtml);
+                    }
+                });
+                
+                $('#project_gallery_ids').val(currentIds.join(','));
+            });
+            
+            galleryFrame.open();
+        });
+        
+        // Remove image
+        $(document).on('click', '.remove-gallery-image', function() {
+            var item = $(this).closest('.gallery-image-item');
+            var imageId = item.data('id');
+            
+            item.remove();
+            
+            var currentIds = $('#project_gallery_ids').val().split(',').filter(Boolean);
+            currentIds = currentIds.filter(function(id) {
+                return id != imageId;
+            });
+            
+            $('#project_gallery_ids').val(currentIds.join(','));
+        });
+        
+        // Make sortable
+        $('#project-gallery-images').sortable({
+            update: function() {
+                var ids = [];
+                $('.gallery-image-item').each(function() {
+                    ids.push($(this).data('id'));
+                });
+                $('#project_gallery_ids').val(ids.join(','));
+            }
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Save Project Gallery
+ */
+function new_horizon_save_project_gallery($post_id) {
+    if (!isset($_POST['project_gallery_nonce']) || !wp_verify_nonce($_POST['project_gallery_nonce'], 'project_gallery_nonce')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    if (isset($_POST['project_gallery_ids'])) {
+        $gallery_ids = array_filter(array_map('intval', explode(',', $_POST['project_gallery_ids'])));
+        update_post_meta($post_id, '_project_gallery', $gallery_ids);
+    } else {
+        delete_post_meta($post_id, '_project_gallery');
+    }
+}
+add_action('save_post_project', 'new_horizon_save_project_gallery');
+
+/**
+ * Set JPEG compression quality
+ */
+add_filter('jpeg_quality', function() {
+    return 85; // 85% quality (good balance)
+});
+
+add_filter('wp_editor_set_quality', function() {
+    return 85;
+});
+
+/**
+ * Set max image dimensions
+ */
+function new_horizon_resize_large_images($file) {
+    $max_width = 2000;
+    $max_height = 2000;
+    
+    $image = wp_get_image_editor($file);
+    
+    if (!is_wp_error($image)) {
+        $size = $image->get_size();
+        
+        if ($size['width'] > $max_width || $size['height'] > $max_height) {
+            $image->resize($max_width, $max_height, false);
+            $image->save($file);
+        }
+    }
+    
+    return $file;
+}
+add_filter('wp_handle_upload_prefilter', 'new_horizon_resize_large_images');
 
 /**
  * About Intro Section Callback

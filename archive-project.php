@@ -1,8 +1,8 @@
 <?php
 /**
- * Template Name: Projects Page
+ * Archive template for Projects
  *
- * @package Timber_Homes
+ * @package New_Horizon_Developments
  * @since 1.0.0
  */
 
@@ -13,8 +13,8 @@ get_header();
 <section class="page-hero" style="background: linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(26,26,26,0.95) 100%), url('<?php echo get_template_directory_uri(); ?>/images/hero-timber-home.jpg') center/cover;">
     <div class="container">
         <div class="page-hero-content">
-            <h1 class="page-title"><?php esc_html_e('Our Projects', 'timber-homes'); ?></h1>
-            <p class="page-description"><?php esc_html_e('Explore our portfolio of exceptional timber homes', 'timber-homes'); ?></p>
+            <h1 class="page-title"><?php esc_html_e('Our Projects', 'new-horizon'); ?></h1>
+            <p class="page-description"><?php esc_html_e('Explore our portfolio of exceptional custom homes', 'new-horizon'); ?></p>
         </div>
     </div>
 </section>
@@ -24,15 +24,8 @@ get_header();
     <div class="container">
         <div class="portfolio-grid">
             <?php
-            $projects = new WP_Query(array(
-                'post_type'      => 'project',
-                'posts_per_page' => -1,
-                'orderby'        => 'date',
-                'order'          => 'DESC',
-            ));
-
-            if ($projects->have_posts()) :
-                while ($projects->have_posts()) : $projects->the_post();
+            if (have_posts()) :
+                while (have_posts()) : the_post();
                     $location = get_post_meta(get_the_ID(), '_project_location', true);
                     ?>
                     <a href="<?php the_permalink(); ?>" class="portfolio-item reveal">
@@ -57,7 +50,7 @@ get_header();
             else :
                 ?>
                 <p style="grid-column: 1/-1; text-align: center; color: rgba(255,255,255,0.7);">
-                    <?php esc_html_e('No projects found. Add projects from the WordPress admin panel.', 'timber-homes'); ?>
+                    <?php esc_html_e('No projects found. Add projects from the WordPress admin panel.', 'new-horizon'); ?>
                 </p>
                 <?php
             endif;
