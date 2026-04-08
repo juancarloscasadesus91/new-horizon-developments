@@ -1572,6 +1572,424 @@ p {
     color: var(--color-gray);
 }
 
+/* ========================================
+   SINGLE SERVICE PAGE - NEW DESIGN
+======================================== */
+
+/* Hero Banner */
+.service-hero-banner {
+    background: var(--color-gray-dark);
+    padding: var(--spacing-lg) 0;
+    border-bottom: 1px solid rgba(201, 169, 97, 0.1);
+}
+
+.service-hero-content {
+    text-align: center;
+}
+
+.service-hero-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 169, 97, 0.1);
+    border: 2px solid var(--color-gold);
+    border-radius: 50%;
+}
+
+.service-hero-icon i {
+    font-size: 2.5rem;
+    color: var(--color-gold);
+}
+
+.service-hero-title {
+    font-family: var(--font-primary);
+    font-size: 2.5rem;
+    color: var(--color-white);
+    font-weight: 400;
+    margin: 0;
+}
+
+/* Main Section Layout */
+.service-main-section {
+    background: var(--color-primary);
+}
+
+.service-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: var(--spacing-xl);
+    align-items: start;
+}
+
+/* Main Content */
+.service-main-content {
+    width: 100%;
+}
+
+.service-featured-image {
+    margin-bottom: var(--spacing-lg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.service-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.service-about,
+.service-why-choose {
+    margin-bottom: var(--spacing-xl);
+}
+
+.service-section-title {
+    font-family: var(--font-primary);
+    font-size: 2rem;
+    color: var(--color-gold);
+    margin-bottom: var(--spacing-md);
+    font-weight: 400;
+}
+
+.service-intro {
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-md);
+}
+
+.service-content {
+    color: rgba(255,255,255,0.85);
+    line-height: 1.9;
+    font-size: 1.05rem;
+}
+
+.service-content h2,
+.service-content h3,
+.service-content h4 {
+    font-family: var(--font-primary);
+    color: var(--color-gold);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    font-weight: 400;
+}
+
+.service-content h2 {
+    font-size: 2rem;
+}
+
+.service-content h3 {
+    font-size: 1.6rem;
+}
+
+.service-content h4 {
+    font-size: 1.3rem;
+}
+
+.service-content p {
+    margin-bottom: var(--spacing-md);
+}
+
+.service-content ul,
+.service-content ol {
+    margin: var(--spacing-md) 0;
+    padding-left: var(--spacing-lg);
+    list-style: disc;
+}
+
+.service-content li {
+    margin-bottom: var(--spacing-sm);
+    color: rgba(255,255,255,0.8);
+}
+
+/* Benefits Grid */
+.service-benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.service-benefit-item {
+    background: var(--color-gray-dark);
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(201, 169, 97, 0.1);
+    transition: all 0.3s ease;
+}
+
+.service-benefit-item:hover {
+    border-color: var(--color-gold);
+    transform: translateY(-5px);
+}
+
+.benefit-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(201, 169, 97, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.benefit-icon i {
+    font-size: 1.8rem;
+    color: var(--color-gold);
+}
+
+.service-benefit-item h3 {
+    font-family: var(--font-primary);
+    font-size: 1.3rem;
+    color: var(--color-gold);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 400;
+}
+
+.service-benefit-item p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* CTA Box */
+.service-cta-box {
+    background: var(--color-gold);
+    padding: var(--spacing-lg);
+    border-radius: 8px;
+    margin-top: var(--spacing-xl);
+}
+
+.service-cta-content {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--spacing-lg);
+    align-items: center;
+}
+
+.cta-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cta-icon i {
+    font-size: 2rem;
+    color: var(--color-dark);
+}
+
+.cta-text h3 {
+    font-family: var(--font-primary);
+    font-size: 1.5rem;
+    color: var(--color-dark);
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+}
+
+.cta-text p {
+    color: rgba(0,0,0,0.7);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.cta-button .btn {
+    background: var(--color-dark);
+    color: var(--color-gold);
+    padding: 12px 30px;
+    white-space: nowrap;
+}
+
+.cta-button .btn:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+}
+
+/* Sidebar */
+.service-sidebar {
+    position: sticky;
+    top: 100px;
+}
+
+.service-sidebar-widget {
+    background: var(--color-gray-dark);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    border: 1px solid rgba(201, 169, 97, 0.1);
+}
+
+.sidebar-widget-title {
+    font-family: var(--font-primary);
+    font-size: 1.5rem;
+    color: var(--color-gold);
+    margin: 0 0 var(--spacing-md) 0;
+    font-weight: 400;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+}
+
+.sidebar-services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.sidebar-service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: rgba(255,255,255,0.8);
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.sidebar-service-item:hover {
+    background: rgba(201, 169, 97, 0.05);
+    border-left-color: var(--color-gold);
+    color: var(--color-gold);
+    padding-left: calc(var(--spacing-md) + 5px);
+}
+
+.sidebar-service-item.active {
+    background: rgba(201, 169, 97, 0.1);
+    border-left-color: var(--color-gold);
+    color: var(--color-gold);
+    font-weight: 500;
+}
+
+.sidebar-service-item i {
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+/* Contact Widget */
+.contact-widget-content {
+    text-align: center;
+}
+
+.contact-widget-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(201, 169, 97, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-md);
+}
+
+.contact-widget-icon i {
+    font-size: 2.5rem;
+    color: var(--color-gold);
+}
+
+.service-contact-widget h3 {
+    font-family: var(--font-primary);
+    font-size: 1.5rem;
+    color: var(--color-gold);
+    margin: 0 0 var(--spacing-sm) 0;
+    font-weight: 400;
+}
+
+.service-contact-widget p {
+    color: rgba(255,255,255,0.7);
+    margin-bottom: var(--spacing-lg);
+    font-size: 0.95rem;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.btn-block:last-child {
+    margin-bottom: 0;
+}
+
+.service-contact-widget .btn-whatsapp {
+    background: #25D366;
+    color: white;
+}
+
+.service-contact-widget .btn-whatsapp:hover {
+    background: #20BA5A;
+}
+
+.service-contact-widget .btn-outline {
+    background: transparent;
+    border: 2px solid var(--color-gold);
+    color: var(--color-gold);
+}
+
+.service-contact-widget .btn-outline:hover {
+    background: var(--color-gold);
+    color: var(--color-dark);
+}
+
+/* Related Services Section */
+.related-services-section {
+    background: var(--color-dark);
+}
+
+.related-services-section .service-card {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .service-layout {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .service-sidebar {
+        position: static;
+    }
+    
+    .service-benefits-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .service-cta-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .cta-icon {
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .service-hero-title {
+        font-size: 2rem;
+    }
+    
+    .service-section-title {
+        font-size: 1.6rem;
+    }
+    
+    .service-hero-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .service-hero-icon i {
+        font-size: 2rem;
+    }
+}
+
 /* Focus styles */
 a:focus,
 button:focus,

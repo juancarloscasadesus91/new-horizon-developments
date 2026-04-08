@@ -58,50 +58,48 @@ get_header();
 
         <div class="grid grid-3">
             <?php
-            $services = array(
-                array(
-                    'icon'  => 'fas fa-home',
-                    'title' => __('Custom Home Design', 'timber-homes'),
-                    'desc'  => __('Work with our expert architects to design your perfect timber home. We create personalized floor plans that match your lifestyle, preferences, and budget while maintaining authentic American timber aesthetics.', 'timber-homes'),
-                ),
-                array(
-                    'icon'  => 'fas fa-hammer',
-                    'title' => __('Full Construction', 'timber-homes'),
-                    'desc'  => __('From foundation to roof, we handle every aspect of your timber home construction. Our skilled craftsmen use premium materials and time-tested techniques to ensure exceptional quality and durability.', 'timber-homes'),
-                ),
-                array(
-                    'icon'  => 'fas fa-tree',
-                    'title' => __('Sustainable Materials', 'timber-homes'),
-                    'desc'  => __('We source certified sustainable timber from responsible forests. Our eco-friendly approach ensures your home is not only beautiful but also environmentally responsible and energy-efficient.', 'timber-homes'),
-                ),
-                array(
-                    'icon'  => 'fas fa-tools',
-                    'title' => __('Renovation & Restoration', 'timber-homes'),
-                    'desc'  => __('Breathe new life into existing timber structures. We specialize in restoring and renovating wooden homes, preserving their character while upgrading them with modern amenities and efficiency.', 'timber-homes'),
-                ),
-                array(
-                    'icon'  => 'fas fa-pencil-ruler',
-                    'title' => __('Interior Finishing', 'timber-homes'),
-                    'desc'  => __('Complete your timber home with exquisite interior finishes. From custom cabinetry to hardwood flooring, we create warm, inviting spaces that showcase the natural beauty of wood.', 'timber-homes'),
-                ),
-                array(
-                    'icon'  => 'fas fa-shield-alt',
-                    'title' => __('Warranty & Maintenance', 'timber-homes'),
-                    'desc'  => __('Enjoy peace of mind with our comprehensive warranty and maintenance programs. We stand behind our work and provide ongoing support to keep your timber home in pristine condition for generations.', 'timber-homes'),
-                ),
-            );
+            // Query services from WordPress
+            $services = new WP_Query(array(
+                'post_type'      => 'service',
+                'posts_per_page' => -1,
+                'orderby'        => 'meta_value_num',
+                'meta_key'       => '_service_order',
+                'order'          => 'ASC',
+            ));
 
-            foreach ($services as $service) {
+            if ($services->have_posts()) :
+                while ($services->have_posts()) : $services->the_post();
+                    $icon = get_post_meta(get_the_ID(), '_service_icon', true);
+                    $short_desc = get_post_meta(get_the_ID(), '_service_short_description', true);
+                    ?>
+                    <a href="<?php the_permalink(); ?>" class="service-card reveal">
+                        <?php if ($icon) : ?>
+                            <div class="service-icon">
+                                <i class="<?php echo esc_attr($icon); ?>"></i>
+                            </div>
+                        <?php endif; ?>
+                        <h3><?php the_title(); ?></h3>
+                        <?php if ($short_desc) : ?>
+                            <p><?php echo esc_html($short_desc); ?></p>
+                        <?php else : ?>
+                            <p><?php echo esc_html(get_the_excerpt()); ?></p>
+                        <?php endif; ?>
+                    </a>
+                    <?php
+                endwhile;
+                wp_reset_postdata();
+            else :
+                // Fallback: Show message if no services exist
                 ?>
                 <div class="service-card reveal">
                     <div class="service-icon">
-                        <i class="<?php echo esc_attr($service['icon']); ?>"></i>
+                        <i class="fas fa-info-circle"></i>
                     </div>
-                    <h3><?php echo esc_html($service['title']); ?></h3>
-                    <p><?php echo esc_html($service['desc']); ?></p>
+                    <h3><?php esc_html_e('No Services Yet', 'new-horizon'); ?></h3>
+                    <p><?php esc_html_e('Services will appear here once they are added from the WordPress admin panel.', 'new-horizon'); ?></p>
                 </div>
                 <?php
-            }
+            endif;
             ?>
         </div>
     </div>

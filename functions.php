@@ -170,6 +170,26 @@ function new_horizon_scripts() {
 add_action('wp_enqueue_scripts', 'new_horizon_scripts');
 
 /**
+ * Enqueue Admin Scripts and Styles
+ */
+function new_horizon_admin_scripts($hook) {
+    // Solo cargar en las páginas de edición de servicios
+    global $post_type;
+    
+    if (($hook == 'post-new.php' || $hook == 'post.php') && $post_type == 'service') {
+        // Font Awesome para el admin
+        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css', array(), '6.4.0');
+        
+        // Icon Picker CSS
+        wp_enqueue_style('icon-picker-css', get_template_directory_uri() . '/css/admin-icon-picker.css', array(), '1.0.0');
+        
+        // Icon Picker JS
+        wp_enqueue_script('icon-picker-js', get_template_directory_uri() . '/js/icon-picker.js', array('jquery'), '1.0.0', true);
+    }
+}
+add_action('admin_enqueue_scripts', 'new_horizon_admin_scripts');
+
+/**
  * Custom Post Type: Projects
  */
 function new_horizon_register_projects_post_type() {
@@ -476,6 +496,46 @@ function new_horizon_customize_register($wp_customize) {
 add_action('customize_register', 'new_horizon_customize_register');
 
 /**
+ * Custom Post Type: Services
+ */
+function new_horizon_register_services_post_type() {
+    $labels = array(
+        'name'               => _x('Services', 'post type general name', 'new-horizon'),
+        'singular_name'      => _x('Service', 'post type singular name', 'new-horizon'),
+        'menu_name'          => _x('Services', 'admin menu', 'new-horizon'),
+        'add_new'            => _x('Add New', 'service', 'new-horizon'),
+        'add_new_item'       => __('Add New Service', 'new-horizon'),
+        'new_item'           => __('New Service', 'new-horizon'),
+        'edit_item'          => __('Edit Service', 'new-horizon'),
+        'view_item'          => __('View Service', 'new-horizon'),
+        'all_items'          => __('All Services', 'new-horizon'),
+        'search_items'       => __('Search Services', 'new-horizon'),
+        'not_found'          => __('No services found.', 'new-horizon'),
+        'not_found_in_trash' => __('No services found in Trash.', 'new-horizon'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array('slug' => 'services'),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => 7,
+        'menu_icon'          => 'dashicons-hammer',
+        'supports'           => array('title', 'editor', 'thumbnail', 'excerpt'),
+        'show_in_rest'       => true,
+    );
+
+    register_post_type('service', $args);
+}
+add_action('init', 'new_horizon_register_services_post_type');
+
+/**
  * Custom Post Type: Team Members
  */
 function new_horizon_register_team_post_type() {
@@ -514,6 +574,157 @@ function new_horizon_register_team_post_type() {
     register_post_type('team_member', $args);
 }
 add_action('init', 'new_horizon_register_team_post_type');
+
+/**
+ * Add Service Meta Boxes
+ */
+function new_horizon_add_service_meta_boxes() {
+    add_meta_box(
+        'service_details',
+        __('Service Details', 'new-horizon'),
+        'new_horizon_service_details_callback',
+        'service',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'new_horizon_add_service_meta_boxes');
+
+function new_horizon_service_details_callback($post) {
+    wp_nonce_field('new_horizon_save_service_details', 'new_horizon_service_details_nonce');
+    
+    $icon = get_post_meta($post->ID, '_service_icon', true);
+    $short_desc = get_post_meta($post->ID, '_service_short_description', true);
+    $order = get_post_meta($post->ID, '_service_order', true);
+    ?>
+    <p>
+        <label for="service_icon"><strong><?php _e('Icon Class (Font Awesome):', 'new-horizon'); ?></strong></label><br>
+        <input type="text" id="service_icon" name="service_icon" value="<?php echo esc_attr($icon); ?>" style="width: 100%; margin-bottom: 10px;" placeholder="fas fa-home">
+        
+        <div class="icon-input-wrapper">
+            <div id="icon-preview">
+                <?php if ($icon) : ?>
+                    <i class="<?php echo esc_attr($icon); ?>"></i>
+                <?php endif; ?>
+            </div>
+            <button type="button" id="select-icon-btn" class="button button-secondary">
+                <span class="dashicons dashicons-search" style="margin-top: 3px;"></span>
+                <?php _e('Seleccionar Ícono', 'new-horizon'); ?>
+            </button>
+        </div>
+        
+        <br><em><?php _e('Haz clic en "Seleccionar Ícono" para elegir de una galería visual, o escribe manualmente la clase del ícono (ej: "fas fa-home", "fas fa-hammer").', 'new-horizon'); ?></em>
+    </p>
+    <p>
+        <label for="service_short_description"><strong><?php _e('Short Description (for homepage):', 'new-horizon'); ?></strong></label><br>
+        <textarea id="service_short_description" name="service_short_description" rows="3" style="width: 100%;" placeholder="Brief description shown on the homepage..."><?php echo esc_textarea($short_desc); ?></textarea>
+        <br><em><?php _e('This short description will appear on the homepage service card. Keep it concise (1-2 sentences).', 'new-horizon'); ?></em>
+    </p>
+    <p>
+        <label for="service_order"><strong><?php _e('Display Order:', 'new-horizon'); ?></strong></label><br>
+        <input type="number" id="service_order" name="service_order" value="<?php echo esc_attr($order ? $order : 0); ?>" style="width: 100px;" min="0">
+        <br><em><?php _e('Lower numbers appear first on the homepage. Use 0, 1, 2, 3, etc.', 'new-horizon'); ?></em>
+    </p>
+    
+    <hr style="margin: 30px 0;">
+    
+    <h3><?php _e('Why Choose Us? - Service Benefits (4 items)', 'new-horizon'); ?></h3>
+    <p><em><?php _e('Add 4 unique benefits/qualities for this specific service. Each benefit needs an icon, title, and description.', 'new-horizon'); ?></em></p>
+    
+    <?php
+    // Get existing benefits
+    $benefits = get_post_meta($post->ID, '_service_benefits', true);
+    if (!is_array($benefits)) {
+        $benefits = array(
+            array('icon' => '', 'title' => '', 'description' => ''),
+            array('icon' => '', 'title' => '', 'description' => ''),
+            array('icon' => '', 'title' => '', 'description' => ''),
+            array('icon' => '', 'title' => '', 'description' => ''),
+        );
+    }
+    
+    for ($i = 0; $i < 4; $i++) :
+        $benefit = isset($benefits[$i]) ? $benefits[$i] : array('icon' => '', 'title' => '', 'description' => '');
+        ?>
+        <div style="background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-left: 4px solid #2271b1;">
+            <h4><?php echo sprintf(__('Benefit %d', 'new-horizon'), $i + 1); ?></h4>
+            
+            <p>
+                <label><strong><?php _e('Icon (Font Awesome):', 'new-horizon'); ?></strong></label><br>
+                <input type="text" name="service_benefits[<?php echo $i; ?>][icon]" value="<?php echo esc_attr($benefit['icon']); ?>" style="width: 100%;" placeholder="fas fa-award">
+                <em><?php _e('Example: fas fa-award, fas fa-certificate, fas fa-clock, fas fa-shield-alt', 'new-horizon'); ?></em>
+            </p>
+            
+            <p>
+                <label><strong><?php _e('Title:', 'new-horizon'); ?></strong></label><br>
+                <input type="text" name="service_benefits[<?php echo $i; ?>][title]" value="<?php echo esc_attr($benefit['title']); ?>" style="width: 100%;" placeholder="Expert Team">
+            </p>
+            
+            <p>
+                <label><strong><?php _e('Description:', 'new-horizon'); ?></strong></label><br>
+                <textarea name="service_benefits[<?php echo $i; ?>][description]" rows="2" style="width: 100%;" placeholder="Brief description of this benefit..."><?php echo esc_textarea($benefit['description']); ?></textarea>
+            </p>
+        </div>
+        <?php
+    endfor;
+    ?>
+    
+    <hr style="margin: 30px 0;">
+    
+    <p>
+        <strong><?php _e('Full Description:', 'new-horizon'); ?></strong><br>
+        <em><?php _e('Use the main content editor above to add the complete service description. This will appear on the individual service page.', 'new-horizon'); ?></em>
+    </p>
+    <p>
+        <strong><?php _e('Service Image:', 'new-horizon'); ?></strong><br>
+        <em><?php _e('Set the Featured Image to display on the service detail page.', 'new-horizon'); ?></em>
+    </p>
+    <?php
+}
+
+function new_horizon_save_service_details($post_id) {
+    if (!isset($_POST['new_horizon_service_details_nonce'])) {
+        return;
+    }
+    
+    if (!wp_verify_nonce($_POST['new_horizon_service_details_nonce'], 'new_horizon_save_service_details')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    if (isset($_POST['service_icon'])) {
+        update_post_meta($post_id, '_service_icon', sanitize_text_field($_POST['service_icon']));
+    }
+    
+    if (isset($_POST['service_short_description'])) {
+        update_post_meta($post_id, '_service_short_description', sanitize_textarea_field($_POST['service_short_description']));
+    }
+    
+    if (isset($_POST['service_order'])) {
+        update_post_meta($post_id, '_service_order', intval($_POST['service_order']));
+    }
+    
+    // Save benefits
+    if (isset($_POST['service_benefits']) && is_array($_POST['service_benefits'])) {
+        $benefits = array();
+        foreach ($_POST['service_benefits'] as $benefit) {
+            $benefits[] = array(
+                'icon' => sanitize_text_field($benefit['icon']),
+                'title' => sanitize_text_field($benefit['title']),
+                'description' => sanitize_textarea_field($benefit['description']),
+            );
+        }
+        update_post_meta($post_id, '_service_benefits', $benefits);
+    }
+}
+add_action('save_post_service', 'new_horizon_save_service_details');
 
 /**
  * Add Team Member Meta Boxes
