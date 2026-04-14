@@ -1431,3 +1431,499 @@ function new_horizon_save_team_member_details($post_id) {
     }
 }
 add_action('save_post_team_member', 'new_horizon_save_team_member_details');
+
+/**
+ * ============================================================================
+ * SEO OPTIMIZATION - Local Business & Google Indexing
+ * ============================================================================
+ */
+
+/**
+ * Add SEO Meta Tags to Head
+ */
+function new_horizon_seo_meta_tags() {
+    // Get page information
+    $site_name = get_bloginfo('name');
+    $site_description = get_bloginfo('description');
+    $site_url = home_url('/');
+    
+    // Default meta description
+    $meta_description = $site_description;
+    $meta_keywords = 'luxury home construction, custom homes, residential development, home builder, construction company';
+    $meta_title = $site_name;
+    $canonical_url = $site_url;
+    $og_type = 'website';
+    $og_image = get_template_directory_uri() . '/images/new-horizon-develoments.png';
+    
+    // Page-specific meta tags
+    if (is_singular()) {
+        global $post;
+        $meta_title = get_the_title() . ' | ' . $site_name;
+        $canonical_url = get_permalink();
+        
+        // Use excerpt or content for description
+        if (has_excerpt()) {
+            $meta_description = wp_strip_all_tags(get_the_excerpt());
+        } else {
+            $meta_description = wp_trim_words(wp_strip_all_tags(get_the_content()), 30, '...');
+        }
+        
+        // Featured image for OG
+        if (has_post_thumbnail()) {
+            $og_image = get_the_post_thumbnail_url(get_the_ID(), 'large');
+        }
+        
+        // Post type specific
+        if (is_singular('project')) {
+            $og_type = 'article';
+            $location = get_post_meta(get_the_ID(), '_project_location', true);
+            if ($location) {
+                $meta_keywords = 'custom home ' . $location . ', luxury construction ' . $location . ', home builder';
+            }
+        } elseif (is_singular('service')) {
+            $og_type = 'article';
+        }
+    } elseif (is_front_page()) {
+        $meta_description = 'New Horizon Developments - Premier luxury home construction and custom residential development. Building exceptional homes with superior craftsmanship and elegant design.';
+        $meta_keywords = 'luxury home builder, custom home construction, residential development, premium homes, construction company';
+    } elseif (is_post_type_archive('project')) {
+        $meta_title = 'Our Projects | ' . $site_name;
+        $meta_description = 'Explore our portfolio of luxury custom homes and residential developments. Quality craftsmanship and exceptional design.';
+        $canonical_url = get_post_type_archive_link('project');
+    } elseif (is_post_type_archive('service')) {
+        $meta_title = 'Our Services | ' . $site_name;
+        $meta_description = 'Comprehensive home construction services including custom builds, renovations, and project management.';
+        $canonical_url = get_post_type_archive_link('service');
+    }
+    
+    // Sanitize
+    $meta_description = esc_attr(wp_strip_all_tags($meta_description));
+    $meta_keywords = esc_attr($meta_keywords);
+    $meta_title = esc_attr($meta_title);
+    
+    ?>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<?php echo $meta_description; ?>">
+    <meta name="keywords" content="<?php echo $meta_keywords; ?>">
+    <meta name="author" content="<?php echo $site_name; ?>">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<?php echo esc_url($canonical_url); ?>">
+    
+    <!-- Open Graph Meta Tags (Facebook, LinkedIn) -->
+    <meta property="og:locale" content="<?php echo get_locale(); ?>">
+    <meta property="og:type" content="<?php echo $og_type; ?>">
+    <meta property="og:title" content="<?php echo $meta_title; ?>">
+    <meta property="og:description" content="<?php echo $meta_description; ?>">
+    <meta property="og:url" content="<?php echo esc_url($canonical_url); ?>">
+    <meta property="og:site_name" content="<?php echo $site_name; ?>">
+    <meta property="og:image" content="<?php echo esc_url($og_image); ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo $meta_title; ?>">
+    <meta name="twitter:description" content="<?php echo $meta_description; ?>">
+    <meta name="twitter:image" content="<?php echo esc_url($og_image); ?>">
+    
+    <!-- Additional SEO -->
+    <meta name="format-detection" content="telephone=yes">
+    <meta name="HandheldFriendly" content="true">
+    <?php
+}
+add_action('wp_head', 'new_horizon_seo_meta_tags', 1);
+
+/**
+ * Add Local Business Schema.org Structured Data
+ */
+function new_horizon_local_business_schema() {
+    // Only on homepage
+    if (!is_front_page()) {
+        return;
+    }
+    
+    $business_name = get_bloginfo('name');
+    $business_description = get_bloginfo('description');
+    $business_url = home_url('/');
+    $business_logo = get_template_directory_uri() . '/images/new-horizon-develoments.png';
+    
+    // Get contact info from customizer
+    $phone = get_theme_mod('new_horizon_phone', '+1 (555) 123-4567');
+    $email = get_theme_mod('new_horizon_email', 'info@newhorizondevelopments.com');
+    $address = get_theme_mod('new_horizon_address', '123 Main Street, Denver, CO 80202');
+    
+    // Parse address (simple parsing)
+    $address_parts = explode(',', $address);
+    $street = isset($address_parts[0]) ? trim($address_parts[0]) : '';
+    $city = isset($address_parts[1]) ? trim($address_parts[1]) : '';
+    $state_zip = isset($address_parts[2]) ? trim($address_parts[2]) : '';
+    
+    // Get social media
+    $facebook = get_theme_mod('new_horizon_facebook', '');
+    $instagram = get_theme_mod('new_horizon_instagram', '');
+    $linkedin = get_theme_mod('new_horizon_linkedin', '');
+    
+    $social_profiles = array();
+    if ($facebook) $social_profiles[] = $facebook;
+    if ($instagram) $social_profiles[] = $instagram;
+    if ($linkedin) $social_profiles[] = $linkedin;
+    
+    $schema = array(
+        '@context' => 'https://schema.org',
+        '@type' => 'GeneralContractor',
+        'name' => $business_name,
+        'description' => $business_description,
+        'url' => $business_url,
+        'logo' => $business_logo,
+        'image' => $business_logo,
+        'telephone' => $phone,
+        'email' => $email,
+        'address' => array(
+            '@type' => 'PostalAddress',
+            'streetAddress' => $street,
+            'addressLocality' => $city,
+            'addressRegion' => $state_zip,
+            'addressCountry' => 'US'
+        ),
+        'geo' => array(
+            '@type' => 'GeoCoordinates',
+            'latitude' => '39.7392', // Denver coordinates - update with actual
+            'longitude' => '-104.9903'
+        ),
+        'priceRange' => '$$$',
+        'areaServed' => array(
+            '@type' => 'State',
+            'name' => 'Colorado'
+        ),
+        'openingHoursSpecification' => array(
+            '@type' => 'OpeningHoursSpecification',
+            'dayOfWeek' => array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'),
+            'opens' => '08:00',
+            'closes' => '17:00'
+        )
+    );
+    
+    if (!empty($social_profiles)) {
+        $schema['sameAs'] = $social_profiles;
+    }
+    
+    echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
+}
+add_action('wp_head', 'new_horizon_local_business_schema', 2);
+
+/**
+ * Add Project Schema.org Structured Data
+ */
+function new_horizon_project_schema() {
+    if (!is_singular('project')) {
+        return;
+    }
+    
+    global $post;
+    
+    $location = get_post_meta(get_the_ID(), '_project_location', true);
+    $size = get_post_meta(get_the_ID(), '_project_size', true);
+    $year = get_post_meta(get_the_ID(), '_project_year', true);
+    
+    $schema = array(
+        '@context' => 'https://schema.org',
+        '@type' => 'CreativeWork',
+        'name' => get_the_title(),
+        'description' => wp_strip_all_tags(get_the_excerpt() ?: get_the_content()),
+        'url' => get_permalink(),
+        'creator' => array(
+            '@type' => 'Organization',
+            'name' => get_bloginfo('name')
+        )
+    );
+    
+    if (has_post_thumbnail()) {
+        $schema['image'] = get_the_post_thumbnail_url(get_the_ID(), 'large');
+    }
+    
+    if ($location) {
+        $schema['contentLocation'] = array(
+            '@type' => 'Place',
+            'name' => $location
+        );
+    }
+    
+    if ($year) {
+        $schema['dateCreated'] = $year;
+    }
+    
+    echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
+}
+add_action('wp_head', 'new_horizon_project_schema', 2);
+
+/**
+ * Add Breadcrumb Schema
+ */
+function new_horizon_breadcrumb_schema() {
+    if (is_front_page()) {
+        return;
+    }
+    
+    $items = array();
+    $position = 1;
+    
+    // Home
+    $items[] = array(
+        '@type' => 'ListItem',
+        'position' => $position++,
+        'name' => 'Home',
+        'item' => home_url('/')
+    );
+    
+    // Archive pages
+    if (is_post_type_archive('project')) {
+        $items[] = array(
+            '@type' => 'ListItem',
+            'position' => $position++,
+            'name' => 'Projects',
+            'item' => get_post_type_archive_link('project')
+        );
+    } elseif (is_post_type_archive('service')) {
+        $items[] = array(
+            '@type' => 'ListItem',
+            'position' => $position++,
+            'name' => 'Services',
+            'item' => get_post_type_archive_link('service')
+        );
+    }
+    
+    // Single pages
+    if (is_singular('project')) {
+        $items[] = array(
+            '@type' => 'ListItem',
+            'position' => $position++,
+            'name' => 'Projects',
+            'item' => get_post_type_archive_link('project')
+        );
+        $items[] = array(
+            '@type' => 'ListItem',
+            'position' => $position++,
+            'name' => get_the_title(),
+            'item' => get_permalink()
+        );
+    } elseif (is_singular('service')) {
+        $items[] = array(
+            '@type' => 'ListItem',
+            'position' => $position++,
+            'name' => 'Services',
+            'item' => get_post_type_archive_link('service')
+        );
+        $items[] = array(
+            '@type' => 'ListItem',
+            'position' => $position++,
+            'name' => get_the_title(),
+            'item' => get_permalink()
+        );
+    } elseif (is_page()) {
+        $items[] = array(
+            '@type' => 'ListItem',
+            'position' => $position++,
+            'name' => get_the_title(),
+            'item' => get_permalink()
+        );
+    }
+    
+    if (count($items) > 1) {
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => $items
+        );
+        
+        echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";
+    }
+}
+add_action('wp_head', 'new_horizon_breadcrumb_schema', 3);
+
+/**
+ * Generate XML Sitemap
+ */
+function new_horizon_generate_sitemap() {
+    // Check if WordPress has native sitemap (WP 5.5+)
+    // This is a fallback for older versions
+    if (function_exists('wp_sitemaps_get_server')) {
+        return; // Use WordPress native sitemap
+    }
+    
+    // Simple sitemap generation for older WP versions
+    if (isset($_GET['sitemap']) && $_GET['sitemap'] === 'xml') {
+        header('Content-Type: application/xml; charset=utf-8');
+        echo '<?xml version="1.0" encoding="UTF-8"?>';
+        echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        
+        // Homepage
+        echo '<url>';
+        echo '<loc>' . esc_url(home_url('/')) . '</loc>';
+        echo '<changefreq>weekly</changefreq>';
+        echo '<priority>1.0</priority>';
+        echo '</url>';
+        
+        // Pages
+        $pages = get_pages();
+        foreach ($pages as $page) {
+            echo '<url>';
+            echo '<loc>' . esc_url(get_permalink($page->ID)) . '</loc>';
+            echo '<lastmod>' . mysql2date('Y-m-d', $page->post_modified) . '</lastmod>';
+            echo '<changefreq>monthly</changefreq>';
+            echo '<priority>0.8</priority>';
+            echo '</url>';
+        }
+        
+        // Projects
+        $projects = get_posts(array('post_type' => 'project', 'posts_per_page' => -1));
+        foreach ($projects as $project) {
+            echo '<url>';
+            echo '<loc>' . esc_url(get_permalink($project->ID)) . '</loc>';
+            echo '<lastmod>' . mysql2date('Y-m-d', $project->post_modified) . '</lastmod>';
+            echo '<changefreq>monthly</changefreq>';
+            echo '<priority>0.7</priority>';
+            echo '</url>';
+        }
+        
+        // Services
+        $services = get_posts(array('post_type' => 'service', 'posts_per_page' => -1));
+        foreach ($services as $service) {
+            echo '<url>';
+            echo '<loc>' . esc_url(get_permalink($service->ID)) . '</loc>';
+            echo '<lastmod>' . mysql2date('Y-m-d', $service->post_modified) . '</lastmod>';
+            echo '<changefreq>monthly</changefreq>';
+            echo '<priority>0.7</priority>';
+            echo '</url>';
+        }
+        
+        echo '</urlset>';
+        exit;
+    }
+}
+add_action('template_redirect', 'new_horizon_generate_sitemap');
+
+/**
+ * Add Customizer Settings for SEO
+ */
+function new_horizon_seo_customizer($wp_customize) {
+    // SEO Section
+    $wp_customize->add_section('new_horizon_seo', array(
+        'title'    => __('SEO Settings', 'new-horizon'),
+        'priority' => 35,
+    ));
+    
+    // Business Coordinates
+    $wp_customize->add_setting('new_horizon_latitude', array(
+        'default'           => '39.7392',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('new_horizon_latitude', array(
+        'label'       => __('Business Latitude', 'new-horizon'),
+        'description' => __('For Google Maps and local SEO (e.g., 39.7392)', 'new-horizon'),
+        'section'     => 'new_horizon_seo',
+        'type'        => 'text',
+    ));
+    
+    $wp_customize->add_setting('new_horizon_longitude', array(
+        'default'           => '-104.9903',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('new_horizon_longitude', array(
+        'label'       => __('Business Longitude', 'new-horizon'),
+        'description' => __('For Google Maps and local SEO (e.g., -104.9903)', 'new-horizon'),
+        'section'     => 'new_horizon_seo',
+        'type'        => 'text',
+    ));
+    
+    // Service Area
+    $wp_customize->add_setting('new_horizon_service_area', array(
+        'default'           => 'Colorado',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('new_horizon_service_area', array(
+        'label'       => __('Service Area', 'new-horizon'),
+        'description' => __('State or region you serve (e.g., Colorado)', 'new-horizon'),
+        'section'     => 'new_horizon_seo',
+        'type'        => 'text',
+    ));
+}
+add_action('customize_register', 'new_horizon_seo_customizer');
+
+/**
+ * Optimize Permalinks Structure
+ */
+function new_horizon_optimize_permalinks() {
+    // Ensure pretty permalinks are enabled
+    global $wp_rewrite;
+    
+    // Set custom permalink structure if not already set
+    if (get_option('permalink_structure') === '') {
+        update_option('permalink_structure', '/%postname%/');
+        flush_rewrite_rules();
+    }
+}
+add_action('after_switch_theme', 'new_horizon_optimize_permalinks');
+
+/**
+ * Add robots.txt rules
+ */
+function new_horizon_robots_txt($output, $public) {
+    if ($public) {
+        $output .= "User-agent: *\n";
+        $output .= "Disallow: /wp-admin/\n";
+        $output .= "Disallow: /wp-includes/\n";
+        $output .= "Disallow: /wp-content/plugins/\n";
+        $output .= "Disallow: /wp-content/themes/\n";
+        $output .= "Allow: /wp-content/uploads/\n";
+        $output .= "\n";
+        
+        // Add sitemap
+        if (function_exists('wp_sitemaps_get_server')) {
+            $output .= "Sitemap: " . home_url('/wp-sitemap.xml') . "\n";
+        } else {
+            $output .= "Sitemap: " . home_url('/?sitemap=xml') . "\n";
+        }
+    }
+    
+    return $output;
+}
+add_filter('robots_txt', 'new_horizon_robots_txt', 10, 2);
+
+/**
+ * Add hreflang tags for international SEO (if needed)
+ */
+function new_horizon_hreflang_tags() {
+    if (is_singular() || is_front_page()) {
+        $current_url = get_permalink();
+        if (is_front_page()) {
+            $current_url = home_url('/');
+        }
+        
+        // Default language
+        echo '<link rel="alternate" hreflang="en-US" href="' . esc_url($current_url) . '" />' . "\n";
+        echo '<link rel="alternate" hreflang="x-default" href="' . esc_url($current_url) . '" />' . "\n";
+    }
+}
+add_action('wp_head', 'new_horizon_hreflang_tags', 4);
+
+/**
+ * Optimize title tag for SEO
+ */
+function new_horizon_document_title_separator($sep) {
+    return '|';
+}
+add_filter('document_title_separator', 'new_horizon_document_title_separator');
+
+function new_horizon_document_title_parts($title) {
+    if (is_front_page()) {
+        $title['title'] = get_bloginfo('name');
+        $title['tagline'] = get_bloginfo('description');
+    }
+    return $title;
+}
+add_filter('document_title_parts', 'new_horizon_document_title_parts');
