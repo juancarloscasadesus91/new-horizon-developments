@@ -12,6 +12,139 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Add Front Page Meta Boxes
+ */
+function new_horizon_frontpage_meta_boxes() {
+    global $post;
+    if (!$post) return;
+    
+    // Check if this is the front page (either static page or posts page)
+    $front_page_id = get_option('page_on_front');
+    $show_on_front = get_option('show_on_front');
+    
+    // Show on static front page OR if no front page is set (using front-page.php)
+    if ($show_on_front === 'page' && $post->ID != $front_page_id) {
+        return;
+    }
+    
+    // If show_on_front is 'posts', we need to create a settings page instead
+    // For now, let's show it on any page with slug 'home' or if it's the front page
+    if ($show_on_front !== 'page' && $post->post_name !== 'home') {
+        return;
+    }
+    
+    add_meta_box(
+        'why_choose_us_section',
+        __('Why Choose Us Section', 'new-horizon'),
+        'new_horizon_why_choose_us_callback',
+        'page',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'new_horizon_frontpage_meta_boxes');
+
+/**
+ * Why Choose Us Callback
+ */
+function new_horizon_why_choose_us_callback($post) {
+    wp_nonce_field('why_choose_us_nonce', 'why_choose_us_nonce');
+    
+    $why_subtitle = get_post_meta($post->ID, '_why_subtitle', true);
+    $why_title = get_post_meta($post->ID, '_why_title', true);
+    $why_description = get_post_meta($post->ID, '_why_description', true);
+    $why_items = get_post_meta($post->ID, '_why_items', true);
+    
+    if (!is_array($why_items) || empty($why_items)) {
+        $why_items = array(
+            array('number' => '25+', 'title' => 'Years of Experience', 'description' => 'Over two decades of expertise in timber home construction, delivering exceptional quality and craftsmanship.'),
+            array('number' => '500+', 'title' => 'Homes Built', 'description' => 'Successfully completed over 500 custom timber homes, each one a testament to our commitment to excellence.'),
+            array('number' => '100%', 'title' => 'Satisfaction Rate', 'description' => 'Every client is a satisfied client. We don\'t rest until your dream home exceeds your expectations.'),
+            array('number' => 'A+', 'title' => 'BBB Rating', 'description' => 'Accredited with the Better Business Bureau with an A+ rating, reflecting our integrity and customer service.'),
+        );
+    }
+    ?>
+    <p>
+        <label><strong><?php _e('Section Subtitle:', 'new-horizon'); ?></strong></label><br>
+        <input type="text" name="why_subtitle" value="<?php echo esc_attr($why_subtitle ?: 'Why Choose Us'); ?>" style="width: 100%;" placeholder="Why Choose Us">
+    </p>
+    <p>
+        <label><strong><?php _e('Section Title:', 'new-horizon'); ?></strong></label><br>
+        <input type="text" name="why_title" value="<?php echo esc_attr($why_title ?: 'Building Excellence Since 1995'); ?>" style="width: 100%;" placeholder="Building Excellence Since 1995">
+    </p>
+    <p>
+        <label><strong><?php _e('Section Description:', 'new-horizon'); ?></strong></label><br>
+        <input type="text" name="why_description" value="<?php echo esc_attr($why_description ?: 'Trusted by hundreds of families across America'); ?>" style="width: 100%;" placeholder="Trusted by hundreds of families across America">
+    </p>
+    
+    <h4><?php _e('Why Choose Us Items (4 items):', 'new-horizon'); ?></h4>
+    <?php for ($i = 0; $i < 4; $i++) : 
+        $item = isset($why_items[$i]) ? $why_items[$i] : array('number' => '', 'title' => '', 'description' => '');
+    ?>
+    <div style="background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-left: 4px solid #2271b1;">
+        <h4><?php echo sprintf(__('Item %d', 'new-horizon'), $i + 1); ?></h4>
+        <p>
+            <label><strong><?php _e('Number/Stat:', 'new-horizon'); ?></strong></label><br>
+            <input type="text" name="why_items[<?php echo $i; ?>][number]" value="<?php echo esc_attr($item['number']); ?>" style="width: 100%;" placeholder="25+">
+            <em><?php _e('e.g., "25+", "500+", "100%", "A+"', 'new-horizon'); ?></em>
+        </p>
+        <p>
+            <label><strong><?php _e('Title:', 'new-horizon'); ?></strong></label><br>
+            <input type="text" name="why_items[<?php echo $i; ?>][title]" value="<?php echo esc_attr($item['title']); ?>" style="width: 100%;" placeholder="Years of Experience">
+        </p>
+        <p>
+            <label><strong><?php _e('Description:', 'new-horizon'); ?></strong></label><br>
+            <textarea name="why_items[<?php echo $i; ?>][description]" rows="3" style="width: 100%;"><?php echo esc_textarea($item['description']); ?></textarea>
+        </p>
+    </div>
+    <?php endfor; ?>
+    <?php
+}
+
+/**
+ * Save Front Page Meta Boxes
+ */
+function new_horizon_save_frontpage_meta($post_id) {
+    if (!isset($_POST['why_choose_us_nonce']) || !wp_verify_nonce($_POST['why_choose_us_nonce'], 'why_choose_us_nonce')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    // Save Why Choose Us fields
+    if (isset($_POST['why_subtitle'])) {
+        update_post_meta($post_id, '_why_subtitle', sanitize_text_field($_POST['why_subtitle']));
+    }
+    
+    if (isset($_POST['why_title'])) {
+        update_post_meta($post_id, '_why_title', sanitize_text_field($_POST['why_title']));
+    }
+    
+    if (isset($_POST['why_description'])) {
+        update_post_meta($post_id, '_why_description', sanitize_text_field($_POST['why_description']));
+    }
+    
+    if (isset($_POST['why_items']) && is_array($_POST['why_items'])) {
+        $items = array();
+        foreach ($_POST['why_items'] as $item) {
+            $items[] = array(
+                'number' => sanitize_text_field($item['number']),
+                'title' => sanitize_text_field($item['title']),
+                'description' => sanitize_textarea_field($item['description']),
+            );
+        }
+        update_post_meta($post_id, '_why_items', $items);
+    }
+}
+add_action('save_post_page', 'new_horizon_save_frontpage_meta');
+
+/**
  * Add About Us Page Meta Boxes
  */
 function new_horizon_about_meta_boxes() {
