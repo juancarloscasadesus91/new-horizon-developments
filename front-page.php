@@ -328,7 +328,10 @@ get_header();
 
             <!-- Contact Form -->
             <div class="contact-form">
-                <form id="contactForm" action="#" method="POST">
+                <div id="form-messages"></div>
+                <form id="contactForm" method="POST">
+                    <?php wp_nonce_field('contact_form_nonce', 'contact_nonce'); ?>
+                    
                     <div class="form-group">
                         <label for="name"><?php esc_html_e('Full Name', 'timber-homes'); ?> *</label>
                         <input type="text" id="name" name="name" required>
@@ -360,9 +363,72 @@ get_header();
                         <textarea id="message" name="message" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary"><?php esc_html_e('Send Message', 'timber-homes'); ?></button>
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        <span class="btn-text"><?php esc_html_e('Send Message', 'timber-homes'); ?></span>
+                        <span class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> <?php esc_html_e('Sending...', 'timber-homes'); ?>
+                        </span>
+                    </button>
                 </form>
             </div>
+            
+            <script>
+            jQuery(document).ready(function($) {
+                $('#contactForm').on('submit', function(e) {
+                    e.preventDefault();
+                    
+                    var $form = $(this);
+                    var $submitBtn = $('#submit-btn');
+                    var $messages = $('#form-messages');
+                    
+                    // Disable button and show loading
+                    $submitBtn.prop('disabled', true);
+                    $submitBtn.find('.btn-text').hide();
+                    $submitBtn.find('.btn-loading').show();
+                    $messages.html('');
+                    
+                    // Prepare data
+                    var formData = {
+                        action: 'submit_contact_form',
+                        nonce: $('#contact_nonce').val(),
+                        name: $('#name').val(),
+                        email: $('#email').val(),
+                        phone: $('#phone').val(),
+                        service: $('#service').val(),
+                        message: $('#message').val()
+                    };
+                    
+                    // Send AJAX request
+                    $.ajax({
+                        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                        type: 'POST',
+                        data: formData,
+                        success: function(response) {
+                            if (response.success) {
+                                $messages.html('<div class="alert alert-success"><i class="fas fa-check-circle"></i> ' + response.data.message + '</div>');
+                                $form[0].reset();
+                            } else {
+                                $messages.html('<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> ' + response.data.message + '</div>');
+                            }
+                        },
+                        error: function() {
+                            $messages.html('<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <?php esc_html_e('An error occurred. Please try again.', 'timber-homes'); ?></div>');
+                        },
+                        complete: function() {
+                            // Re-enable button
+                            $submitBtn.prop('disabled', false);
+                            $submitBtn.find('.btn-text').show();
+                            $submitBtn.find('.btn-loading').hide();
+                            
+                            // Scroll to message
+                            $('html, body').animate({
+                                scrollTop: $messages.offset().top - 100
+                            }, 500);
+                        }
+                    });
+                });
+            });
+            </script>
         </div>
     </div>
 </section>

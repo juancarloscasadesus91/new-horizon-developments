@@ -438,6 +438,254 @@ function new_horizon_resize_large_images($file) {
 add_filter('wp_handle_upload_prefilter', 'new_horizon_resize_large_images');
 
 /**
+ * Handle Contact Form Submission
+ */
+function new_horizon_handle_contact_form() {
+    // Verify nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'contact_form_nonce')) {
+        wp_send_json_error(array('message' => __('Security check failed. Please refresh and try again.', 'new-horizon')));
+    }
+    
+    // Sanitize inputs
+    $name = sanitize_text_field($_POST['name']);
+    $email = sanitize_email($_POST['email']);
+    $phone = sanitize_text_field($_POST['phone']);
+    $service = sanitize_text_field($_POST['service']);
+    $message = sanitize_textarea_field($_POST['message']);
+    
+    // Validate required fields
+    if (empty($name) || empty($email) || empty($message)) {
+        wp_send_json_error(array('message' => __('Please fill in all required fields.', 'new-horizon')));
+    }
+    
+    if (!is_email($email)) {
+        wp_send_json_error(array('message' => __('Please enter a valid email address.', 'new-horizon')));
+    }
+    
+    // Get admin email
+    $admin_email = get_option('admin_email');
+    $site_name = get_bloginfo('name');
+    
+    // Email subject
+    $subject = sprintf(__('[%s] New Contact Form Submission from %s', 'new-horizon'), $site_name, $name);
+    
+    // Email body
+    $body = sprintf(
+        __("You have received a new contact form submission:\n\n", 'new-horizon') .
+        __("Name: %s\n", 'new-horizon') .
+        __("Email: %s\n", 'new-horizon') .
+        __("Phone: %s\n", 'new-horizon') .
+        __("Service: %s\n\n", 'new-horizon') .
+        __("Message:\n%s\n\n", 'new-horizon') .
+        __("---\n", 'new-horizon') .
+        __("This email was sent from the contact form on %s", 'new-horizon'),
+        $name,
+        $email,
+        $phone ?: __('Not provided', 'new-horizon'),
+        $service ?: __('Not specified', 'new-horizon'),
+        $message,
+        $site_name
+    );
+    
+    // Email headers
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8',
+        'From: ' . $site_name . ' <' . $admin_email . '>',
+        'Reply-To: ' . $name . ' <' . $email . '>'
+    );
+    
+    // Send email
+    $sent = wp_mail($admin_email, $subject, $body, $headers);
+    
+    if ($sent) {
+        // Save to database (optional)
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'contact_submissions';
+        
+        $wpdb->insert(
+            $table_name,
+            array(
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'service' => $service,
+                'message' => $message,
+                'submitted_at' => current_time('mysql'),
+                'ip_address' => $_SERVER['REMOTE_ADDR']
+            ),
+            array('%s', '%s', '%s', '%s', '%s', '%s', '%s')
+        );
+        
+        wp_send_json_success(array(
+            'message' => __('Thank you for your message! We will get back to you soon.', 'new-horizon')
+        ));
+    } else {
+        wp_send_json_error(array(
+            'message' => __('Sorry, there was an error sending your message. Please try again or contact us directly.', 'new-horizon')
+        ));
+    }
+}
+add_action('wp_ajax_submit_contact_form', 'new_horizon_handle_contact_form');
+add_action('wp_ajax_nopriv_submit_contact_form', 'new_horizon_handle_contact_form');
+
+/**
+ * Create contact submissions table
+ */
+function new_horizon_create_contact_table() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'contact_submissions';
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        name varchar(255) NOT NULL,
+        email varchar(255) NOT NULL,
+        phone varchar(50),
+        service varchar(100),
+        message text NOT NULL,
+        submitted_at datetime NOT NULL,
+        ip_address varchar(100),
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+    
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+}
+register_activation_hook(__FILE__, 'new_horizon_create_contact_table');
+// Run on theme activation
+add_action('after_switch_theme', 'new_horizon_create_contact_table');
+
+/**
+ * Footer Customizer Settings
+ */
+function new_horizon_footer_customizer($wp_customize) {
+    
+    // Footer Section
+    $wp_customize->add_section('footer_settings', array(
+        'title'    => __('Footer Settings', 'new-horizon'),
+        'priority' => 120,
+    ));
+    
+    // About Section
+    $wp_customize->add_setting('footer_about_title', array(
+        'default'           => get_bloginfo('name'),
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('footer_about_title', array(
+        'label'    => __('About Section Title', 'new-horizon'),
+        'section'  => 'footer_settings',
+        'type'     => 'text',
+    ));
+    
+    $wp_customize->add_setting('footer_about_text', array(
+        'default'           => 'Building premium American-style timber homes since 1995. We combine traditional craftsmanship with modern techniques to create sustainable, beautiful homes that last for generations.',
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ));
+    
+    $wp_customize->add_control('footer_about_text', array(
+        'label'    => __('About Section Text', 'new-horizon'),
+        'section'  => 'footer_settings',
+        'type'     => 'textarea',
+    ));
+    
+    // Social Media Links
+    $social_networks = array(
+        'facebook'  => 'Facebook URL',
+        'instagram' => 'Instagram URL',
+        'pinterest' => 'Pinterest URL',
+        'linkedin'  => 'LinkedIn URL',
+        'twitter'   => 'Twitter URL',
+        'youtube'   => 'YouTube URL',
+    );
+    
+    foreach ($social_networks as $network => $label) {
+        $wp_customize->add_setting("footer_social_$network", array(
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+        
+        $wp_customize->add_control("footer_social_$network", array(
+            'label'    => __($label, 'new-horizon'),
+            'section'  => 'footer_settings',
+            'type'     => 'url',
+        ));
+    }
+    
+    // Contact Information
+    $wp_customize->add_setting('footer_address', array(
+        'default'           => '123 Main Street, Denver, CO 80202',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('footer_address', array(
+        'label'    => __('Address', 'new-horizon'),
+        'section'  => 'footer_settings',
+        'type'     => 'text',
+    ));
+    
+    $wp_customize->add_setting('footer_phone', array(
+        'default'           => '+1 (555) 123-4567',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('footer_phone', array(
+        'label'    => __('Phone Number', 'new-horizon'),
+        'section'  => 'footer_settings',
+        'type'     => 'text',
+    ));
+    
+    $wp_customize->add_setting('footer_email', array(
+        'default'           => 'info@newhorizon.com',
+        'sanitize_callback' => 'sanitize_email',
+    ));
+    
+    $wp_customize->add_control('footer_email', array(
+        'label'    => __('Email Address', 'new-horizon'),
+        'section'  => 'footer_settings',
+        'type'     => 'email',
+    ));
+    
+    $wp_customize->add_setting('footer_hours', array(
+        'default'           => 'Mon-Fri: 8am - 6pm MST',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('footer_hours', array(
+        'label'    => __('Business Hours', 'new-horizon'),
+        'section'  => 'footer_settings',
+        'type'     => 'text',
+    ));
+    
+    // WhatsApp
+    $wp_customize->add_setting('footer_whatsapp', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('footer_whatsapp', array(
+        'label'       => __('WhatsApp Number', 'new-horizon'),
+        'description' => __('Format: 15551234567 (country code + number, no spaces)', 'new-horizon'),
+        'section'     => 'footer_settings',
+        'type'        => 'text',
+    ));
+    
+    // Copyright Text
+    $wp_customize->add_setting('footer_copyright', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    
+    $wp_customize->add_control('footer_copyright', array(
+        'label'       => __('Custom Copyright Text', 'new-horizon'),
+        'description' => __('Leave empty to use default. Use {year} for current year.', 'new-horizon'),
+        'section'     => 'footer_settings',
+        'type'        => 'text',
+    ));
+}
+add_action('customize_register', 'new_horizon_footer_customizer');
+
+/**
  * About Intro Section Callback
  */
 function new_horizon_about_intro_callback($post) {
