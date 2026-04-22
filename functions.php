@@ -165,18 +165,9 @@ function new_horizon_about_meta_boxes() {
     );
     
     add_meta_box(
-        'about_differences_section',
-        __('What Sets Us Apart Section', 'new-horizon'),
-        'new_horizon_about_differences_callback',
-        'page',
-        'normal',
-        'high'
-    );
-    
-    add_meta_box(
-        'about_values_section',
-        __('Our Commitment Section', 'new-horizon'),
-        'new_horizon_about_values_callback',
+        'about_combined_section',
+        __('What We Handle & What Sets Us Apart', 'new-horizon'),
+        'new_horizon_about_combined_callback',
         'page',
         'normal',
         'high'
@@ -186,15 +177,6 @@ function new_horizon_about_meta_boxes() {
         'about_clients_section',
         __('Who We Build For Section', 'new-horizon'),
         'new_horizon_about_clients_callback',
-        'page',
-        'normal',
-        'high'
-    );
-    
-    add_meta_box(
-        'about_capabilities_section',
-        __('What We Handle Section', 'new-horizon'),
-        'new_horizon_about_capabilities_callback',
         'page',
         'normal',
         'high'
@@ -714,114 +696,80 @@ function new_horizon_about_intro_callback($post) {
         <textarea name="about_intro_text_3" rows="3" style="width: 100%;"><?php echo esc_textarea($intro_text_3); ?></textarea>
     </p>
     <p>
-        <label><strong><?php _e('Image URL:', 'new-horizon'); ?></strong></label><br>
-        <input type="text" name="about_intro_image" id="about_intro_image" value="<?php echo esc_url($intro_image); ?>" style="width: 80%;">
-        <button type="button" class="button upload-image-button"><?php _e('Upload Image', 'new-horizon'); ?></button>
-        <em><?php _e('Or upload from Media Library', 'new-horizon'); ?></em>
+        <label><strong><?php _e('Image:', 'new-horizon'); ?></strong></label><br>
+        <em><?php _e('Image displayed next to the intro text', 'new-horizon'); ?></em>
     </p>
+    
+    <div class="about-intro-image-container" style="margin-top: 15px;">
+        <div id="about-intro-image-preview" style="margin-bottom: 15px;">
+            <?php if ($intro_image) : 
+                $image_url = wp_get_attachment_image_url($intro_image, 'medium');
+                if ($image_url) :
+            ?>
+                <div class="image-preview-item" style="display: inline-block; position: relative; margin-right: 10px;">
+                    <img src="<?php echo esc_url($image_url); ?>" style="max-width: 150px; height: auto; border: 1px solid #ddd;">
+                    <button type="button" class="remove-intro-image" style="position: absolute; top: 5px; right: 5px; background: #dc3232; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-weight: bold;">&times;</button>
+                </div>
+            <?php 
+                endif;
+            endif; ?>
+        </div>
+        
+        <input type="hidden" id="about_intro_image_id" name="about_intro_image" value="<?php echo esc_attr($intro_image); ?>">
+        <button type="button" class="button button-primary upload-intro-image-button">
+            <span class="dashicons dashicons-format-image" style="vertical-align: middle;"></span> 
+            <?php _e('Upload Image', 'new-horizon'); ?>
+        </button>
+    </div>
     <?php
 }
 
 /**
- * What Sets Us Apart Callback
+ * Combined Section Callback (What We Handle & What Sets Us Apart)
  */
-function new_horizon_about_differences_callback($post) {
-    $diff_title = get_post_meta($post->ID, '_about_diff_title', true);
-    $diff_subtitle = get_post_meta($post->ID, '_about_diff_subtitle', true);
-    $differences = get_post_meta($post->ID, '_about_differences', true);
+function new_horizon_about_combined_callback($post) {
+    $combined_title = get_post_meta($post->ID, '_about_combined_title', true);
+    $combined_subtitle = get_post_meta($post->ID, '_about_combined_subtitle', true);
+    $combined_items = get_post_meta($post->ID, '_about_combined_items', true);
     
-    if (!is_array($differences) || empty($differences)) {
-        $differences = array(
-            array('icon' => 'fas fa-compass', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-pencil-ruler', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-handshake', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-hard-hat', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-comments', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-home', 'title' => '', 'description' => ''),
-        );
+    if (!is_array($combined_items) || empty($combined_items)) {
+        $combined_items = array();
+        for ($i = 0; $i < 6; $i++) {
+            $combined_items[] = array('icon' => '', 'title' => '', 'description' => '');
+        }
     }
     ?>
     <p>
         <label><strong><?php _e('Section Title:', 'new-horizon'); ?></strong></label><br>
-        <input type="text" name="about_diff_title" value="<?php echo esc_attr($diff_title); ?>" style="width: 100%;" placeholder="What Sets Us Apart">
+        <input type="text" name="about_combined_title" value="<?php echo esc_attr($combined_title); ?>" style="width: 100%;" placeholder="What We Handle & What Sets Us Apart">
     </p>
     <p>
         <label><strong><?php _e('Section Subtitle:', 'new-horizon'); ?></strong></label><br>
-        <input type="text" name="about_diff_subtitle" value="<?php echo esc_attr($diff_subtitle); ?>" style="width: 100%;" placeholder="A unified process that brings everything together">
+        <input type="text" name="about_combined_subtitle" value="<?php echo esc_attr($combined_subtitle); ?>" style="width: 100%;" placeholder="Our comprehensive approach to luxury homebuilding">
     </p>
     
-    <h4><?php _e('Difference Items (6 items):', 'new-horizon'); ?></h4>
-    <?php for ($i = 0; $i < 6; $i++) : 
-        $item = isset($differences[$i]) ? $differences[$i] : array('icon' => '', 'title' => '', 'description' => '');
+    <h4><?php _e('Items (6 items):', 'new-horizon'); ?></h4>
+    <p><em><?php _e('This combines "What We Handle" and "What Sets Us Apart" into one lighter, more interactive section.', 'new-horizon'); ?></em></p>
+    <?php 
+    for ($i = 0; $i < 6; $i++) : 
+        $item = isset($combined_items[$i]) ? $combined_items[$i] : array('icon' => '', 'title' => '', 'description' => '');
     ?>
     <div style="background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-left: 4px solid #2271b1;">
         <h4><?php echo sprintf(__('Item %d', 'new-horizon'), $i + 1); ?></h4>
         <p>
             <label><strong><?php _e('Icon (Font Awesome):', 'new-horizon'); ?></strong></label><br>
-            <input type="text" name="about_differences[<?php echo $i; ?>][icon]" value="<?php echo esc_attr($item['icon']); ?>" style="width: 100%;" placeholder="fas fa-compass">
+            <input type="text" name="about_combined_items[<?php echo $i; ?>][icon]" value="<?php echo esc_attr($item['icon']); ?>" style="width: 100%;" placeholder="fas fa-compass">
         </p>
         <p>
             <label><strong><?php _e('Title:', 'new-horizon'); ?></strong></label><br>
-            <input type="text" name="about_differences[<?php echo $i; ?>][title]" value="<?php echo esc_attr($item['title']); ?>" style="width: 100%;">
+            <input type="text" name="about_combined_items[<?php echo $i; ?>][title]" value="<?php echo esc_attr($item['title']); ?>" style="width: 100%;">
         </p>
         <p>
             <label><strong><?php _e('Description:', 'new-horizon'); ?></strong></label><br>
-            <textarea name="about_differences[<?php echo $i; ?>][description]" rows="2" style="width: 100%;"><?php echo esc_textarea($item['description']); ?></textarea>
+            <textarea name="about_combined_items[<?php echo $i; ?>][description]" rows="2" style="width: 100%;"><?php echo esc_textarea($item['description']); ?></textarea>
         </p>
     </div>
     <?php endfor; ?>
-    <?php
-}
-
-/**
- * Our Commitment Callback
- */
-function new_horizon_about_values_callback($post) {
-    $values_title = get_post_meta($post->ID, '_about_values_title', true);
-    $values_lead = get_post_meta($post->ID, '_about_values_lead', true);
-    $values = get_post_meta($post->ID, '_about_values', true);
-    $values_image = get_post_meta($post->ID, '_about_values_image', true);
-    
-    if (!is_array($values) || empty($values)) {
-        $values = array(
-            array('title' => '', 'description' => ''),
-            array('title' => '', 'description' => ''),
-            array('title' => '', 'description' => ''),
-            array('title' => '', 'description' => ''),
-        );
-    }
-    ?>
-    <p>
-        <label><strong><?php _e('Section Title:', 'new-horizon'); ?></strong></label><br>
-        <input type="text" name="about_values_title" value="<?php echo esc_attr($values_title); ?>" style="width: 100%;" placeholder="Our Commitment to You">
-    </p>
-    <p>
-        <label><strong><?php _e('Lead Text:', 'new-horizon'); ?></strong></label><br>
-        <textarea name="about_values_lead" rows="2" style="width: 100%;"><?php echo esc_textarea($values_lead); ?></textarea>
-    </p>
-    
-    <h4><?php _e('Values (4 items):', 'new-horizon'); ?></h4>
-    <?php for ($i = 0; $i < 4; $i++) : 
-        $item = isset($values[$i]) ? $values[$i] : array('title' => '', 'description' => '');
-    ?>
-    <div style="background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-left: 4px solid #2271b1;">
-        <h4><?php echo sprintf(__('Value %d', 'new-horizon'), $i + 1); ?></h4>
-        <p>
-            <label><strong><?php _e('Title:', 'new-horizon'); ?></strong></label><br>
-            <input type="text" name="about_values[<?php echo $i; ?>][title]" value="<?php echo esc_attr($item['title']); ?>" style="width: 100%;">
-        </p>
-        <p>
-            <label><strong><?php _e('Description:', 'new-horizon'); ?></strong></label><br>
-            <textarea name="about_values[<?php echo $i; ?>][description]" rows="2" style="width: 100%;"><?php echo esc_textarea($item['description']); ?></textarea>
-        </p>
-    </div>
-    <?php endfor; ?>
-    
-    <p>
-        <label><strong><?php _e('Image URL:', 'new-horizon'); ?></strong></label><br>
-        <input type="text" name="about_values_image" id="about_values_image" value="<?php echo esc_url($values_image); ?>" style="width: 80%;">
-        <button type="button" class="button upload-image-button"><?php _e('Upload Image', 'new-horizon'); ?></button>
-    </p>
     <?php
 }
 
@@ -833,6 +781,7 @@ function new_horizon_about_clients_callback($post) {
     $clients_lead = get_post_meta($post->ID, '_about_clients_lead', true);
     $clients_text_1 = get_post_meta($post->ID, '_about_clients_text_1', true);
     $clients_text_2 = get_post_meta($post->ID, '_about_clients_text_2', true);
+    $clients_image = get_post_meta($post->ID, '_about_clients_image', true);
     ?>
     <p>
         <label><strong><?php _e('Section Title:', 'new-horizon'); ?></strong></label><br>
@@ -850,59 +799,35 @@ function new_horizon_about_clients_callback($post) {
         <label><strong><?php _e('Paragraph 2:', 'new-horizon'); ?></strong></label><br>
         <textarea name="about_clients_text_2" rows="3" style="width: 100%;"><?php echo esc_textarea($clients_text_2); ?></textarea>
     </p>
+    <p>
+        <label><strong><?php _e('Background Image:', 'new-horizon'); ?></strong></label><br>
+        <em><?php _e('Recommended: Beautiful kitchen image', 'new-horizon'); ?></em>
+    </p>
+    
+    <div class="about-clients-image-container" style="margin-top: 15px;">
+        <div id="about-clients-image-preview" style="margin-bottom: 15px;">
+            <?php if ($clients_image) : 
+                $image_url = wp_get_attachment_image_url($clients_image, 'medium');
+                if ($image_url) :
+            ?>
+                <div class="image-preview-item" style="display: inline-block; position: relative; margin-right: 10px;">
+                    <img src="<?php echo esc_url($image_url); ?>" style="max-width: 150px; height: auto; border: 1px solid #ddd;">
+                    <button type="button" class="remove-clients-image" style="position: absolute; top: 5px; right: 5px; background: #dc3232; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-weight: bold;">&times;</button>
+                </div>
+            <?php 
+                endif;
+            endif; ?>
+        </div>
+        
+        <input type="hidden" id="about_clients_image_id" name="about_clients_image" value="<?php echo esc_attr($clients_image); ?>">
+        <button type="button" class="button button-primary upload-clients-image-button">
+            <span class="dashicons dashicons-format-image" style="vertical-align: middle;"></span> 
+            <?php _e('Upload Image', 'new-horizon'); ?>
+        </button>
+    </div>
     <?php
 }
 
-/**
- * What We Handle Callback
- */
-function new_horizon_about_capabilities_callback($post) {
-    $cap_title = get_post_meta($post->ID, '_about_cap_title', true);
-    $cap_subtitle = get_post_meta($post->ID, '_about_cap_subtitle', true);
-    $capabilities = get_post_meta($post->ID, '_about_capabilities', true);
-    
-    if (!is_array($capabilities) || empty($capabilities)) {
-        $capabilities = array(
-            array('icon' => 'fas fa-map-marked-alt', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-pencil-ruler', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-clipboard-list', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-hard-hat', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-home', 'title' => '', 'description' => ''),
-            array('icon' => 'fas fa-file-contract', 'title' => '', 'description' => ''),
-        );
-    }
-    ?>
-    <p>
-        <label><strong><?php _e('Section Title:', 'new-horizon'); ?></strong></label><br>
-        <input type="text" name="about_cap_title" value="<?php echo esc_attr($cap_title); ?>" style="width: 100%;" placeholder="What We Handle">
-    </p>
-    <p>
-        <label><strong><?php _e('Section Subtitle:', 'new-horizon'); ?></strong></label><br>
-        <input type="text" name="about_cap_subtitle" value="<?php echo esc_attr($cap_subtitle); ?>" style="width: 100%;" placeholder="A complete approach to luxury homebuilding">
-    </p>
-    
-    <h4><?php _e('Capability Items (6 items):', 'new-horizon'); ?></h4>
-    <?php for ($i = 0; $i < 6; $i++) : 
-        $item = isset($capabilities[$i]) ? $capabilities[$i] : array('icon' => '', 'title' => '', 'description' => '');
-    ?>
-    <div style="background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-left: 4px solid #2271b1;">
-        <h4><?php echo sprintf(__('Item %d', 'new-horizon'), $i + 1); ?></h4>
-        <p>
-            <label><strong><?php _e('Icon (Font Awesome):', 'new-horizon'); ?></strong></label><br>
-            <input type="text" name="about_capabilities[<?php echo $i; ?>][icon]" value="<?php echo esc_attr($item['icon']); ?>" style="width: 100%;" placeholder="fas fa-map-marked-alt">
-        </p>
-        <p>
-            <label><strong><?php _e('Title:', 'new-horizon'); ?></strong></label><br>
-            <input type="text" name="about_capabilities[<?php echo $i; ?>][title]" value="<?php echo esc_attr($item['title']); ?>" style="width: 100%;">
-        </p>
-        <p>
-            <label><strong><?php _e('Description:', 'new-horizon'); ?></strong></label><br>
-            <textarea name="about_capabilities[<?php echo $i; ?>][description]" rows="2" style="width: 100%;"><?php echo esc_textarea($item['description']); ?></textarea>
-        </p>
-    </div>
-    <?php endfor; ?>
-    <?php
-}
 
 /**
  * Save About Page Meta
@@ -934,47 +859,30 @@ function new_horizon_save_about_meta($post_id) {
         update_post_meta($post_id, '_about_intro_text_3', sanitize_textarea_field($_POST['about_intro_text_3']));
     }
     if (isset($_POST['about_intro_image'])) {
-        update_post_meta($post_id, '_about_intro_image', esc_url_raw($_POST['about_intro_image']));
+        update_post_meta($post_id, '_about_intro_image', absint($_POST['about_intro_image']));
     }
     
-    // Save Differences Section
-    if (isset($_POST['about_diff_title'])) {
-        update_post_meta($post_id, '_about_diff_title', sanitize_text_field($_POST['about_diff_title']));
-    }
-    if (isset($_POST['about_diff_subtitle'])) {
-        update_post_meta($post_id, '_about_diff_subtitle', sanitize_text_field($_POST['about_diff_subtitle']));
-    }
-    if (isset($_POST['about_differences']) && is_array($_POST['about_differences'])) {
-        $differences = array();
-        foreach ($_POST['about_differences'] as $diff) {
-            $differences[] = array(
-                'icon' => sanitize_text_field($diff['icon']),
-                'title' => sanitize_text_field($diff['title']),
-                'description' => sanitize_textarea_field($diff['description']),
-            );
-        }
-        update_post_meta($post_id, '_about_differences', $differences);
-    }
     
-    // Save Values Section
-    if (isset($_POST['about_values_title'])) {
-        update_post_meta($post_id, '_about_values_title', sanitize_text_field($_POST['about_values_title']));
+    // Save Combined Section
+    if (isset($_POST['about_combined_title'])) {
+        update_post_meta($post_id, '_about_combined_title', sanitize_text_field($_POST['about_combined_title']));
     }
-    if (isset($_POST['about_values_lead'])) {
-        update_post_meta($post_id, '_about_values_lead', sanitize_textarea_field($_POST['about_values_lead']));
+    if (isset($_POST['about_combined_subtitle'])) {
+        update_post_meta($post_id, '_about_combined_subtitle', sanitize_text_field($_POST['about_combined_subtitle']));
     }
-    if (isset($_POST['about_values']) && is_array($_POST['about_values'])) {
-        $values = array();
-        foreach ($_POST['about_values'] as $val) {
-            $values[] = array(
-                'title' => sanitize_text_field($val['title']),
-                'description' => sanitize_textarea_field($val['description']),
-            );
+    if (isset($_POST['about_combined_items']) && is_array($_POST['about_combined_items'])) {
+        $combined_items = array();
+        foreach ($_POST['about_combined_items'] as $item) {
+            // Only save non-empty items
+            if (!empty($item['title']) || !empty($item['description'])) {
+                $combined_items[] = array(
+                    'icon' => sanitize_text_field($item['icon']),
+                    'title' => sanitize_text_field($item['title']),
+                    'description' => sanitize_textarea_field($item['description']),
+                );
+            }
         }
-        update_post_meta($post_id, '_about_values', $values);
-    }
-    if (isset($_POST['about_values_image'])) {
-        update_post_meta($post_id, '_about_values_image', esc_url_raw($_POST['about_values_image']));
+        update_post_meta($post_id, '_about_combined_items', $combined_items);
     }
     
     // Save Clients Section
@@ -990,25 +898,10 @@ function new_horizon_save_about_meta($post_id) {
     if (isset($_POST['about_clients_text_2'])) {
         update_post_meta($post_id, '_about_clients_text_2', sanitize_textarea_field($_POST['about_clients_text_2']));
     }
+    if (isset($_POST['about_clients_image'])) {
+        update_post_meta($post_id, '_about_clients_image', absint($_POST['about_clients_image']));
+    }
     
-    // Save Capabilities Section
-    if (isset($_POST['about_cap_title'])) {
-        update_post_meta($post_id, '_about_cap_title', sanitize_text_field($_POST['about_cap_title']));
-    }
-    if (isset($_POST['about_cap_subtitle'])) {
-        update_post_meta($post_id, '_about_cap_subtitle', sanitize_text_field($_POST['about_cap_subtitle']));
-    }
-    if (isset($_POST['about_capabilities']) && is_array($_POST['about_capabilities'])) {
-        $capabilities = array();
-        foreach ($_POST['about_capabilities'] as $cap) {
-            $capabilities[] = array(
-                'icon' => sanitize_text_field($cap['icon']),
-                'title' => sanitize_text_field($cap['title']),
-                'description' => sanitize_textarea_field($cap['description']),
-            );
-        }
-        update_post_meta($post_id, '_about_capabilities', $capabilities);
-    }
 }
 add_action('save_post', 'new_horizon_save_about_meta');
 
@@ -2308,3 +2201,96 @@ function new_horizon_document_title_parts($title) {
     return $title;
 }
 add_filter('document_title_parts', 'new_horizon_document_title_parts');
+
+/**
+ * Enqueue media uploader for About page
+ */
+function new_horizon_about_admin_scripts($hook) {
+    global $post;
+    
+    if ($hook == 'post.php' || $hook == 'post-new.php') {
+        if ($post && get_post_meta($post->ID, '_wp_page_template', true) == 'page-about.php') {
+            wp_enqueue_media();
+            wp_add_inline_script('jquery', "
+                jQuery(document).ready(function($) {
+                    // Upload intro image
+                    var introImageFrame;
+                    $('.upload-intro-image-button').on('click', function(e) {
+                        e.preventDefault();
+                        
+                        if (introImageFrame) {
+                            introImageFrame.open();
+                            return;
+                        }
+                        
+                        introImageFrame = wp.media({
+                            title: 'Select Intro Image',
+                            button: { text: 'Use this image' },
+                            multiple: false
+                        });
+                        
+                        introImageFrame.on('select', function() {
+                            var attachment = introImageFrame.state().get('selection').first().toJSON();
+                            $('#about_intro_image_id').val(attachment.id);
+                            
+                            var imgHtml = '<div class=\"image-preview-item\" style=\"display: inline-block; position: relative; margin-right: 10px;\">' +
+                                '<img src=\"' + attachment.sizes.medium.url + '\" style=\"max-width: 150px; height: auto; border: 1px solid #ddd;\">' +
+                                '<button type=\"button\" class=\"remove-intro-image\" style=\"position: absolute; top: 5px; right: 5px; background: #dc3232; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-weight: bold;\">&times;</button>' +
+                                '</div>';
+                            
+                            $('#about-intro-image-preview').html(imgHtml);
+                        });
+                        
+                        introImageFrame.open();
+                    });
+                    
+                    // Remove intro image
+                    $(document).on('click', '.remove-intro-image', function(e) {
+                        e.preventDefault();
+                        $('#about_intro_image_id').val('');
+                        $('#about-intro-image-preview').html('');
+                    });
+                    
+                    // Upload clients image
+                    var clientsImageFrame;
+                    $('.upload-clients-image-button').on('click', function(e) {
+                        e.preventDefault();
+                        
+                        if (clientsImageFrame) {
+                            clientsImageFrame.open();
+                            return;
+                        }
+                        
+                        clientsImageFrame = wp.media({
+                            title: 'Select Background Image',
+                            button: { text: 'Use this image' },
+                            multiple: false
+                        });
+                        
+                        clientsImageFrame.on('select', function() {
+                            var attachment = clientsImageFrame.state().get('selection').first().toJSON();
+                            $('#about_clients_image_id').val(attachment.id);
+                            
+                            var imgHtml = '<div class=\"image-preview-item\" style=\"display: inline-block; position: relative; margin-right: 10px;\">' +
+                                '<img src=\"' + attachment.sizes.medium.url + '\" style=\"max-width: 150px; height: auto; border: 1px solid #ddd;\">' +
+                                '<button type=\"button\" class=\"remove-clients-image\" style=\"position: absolute; top: 5px; right: 5px; background: #dc3232; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-weight: bold;\">&times;</button>' +
+                                '</div>';
+                            
+                            $('#about-clients-image-preview').html(imgHtml);
+                        });
+                        
+                        clientsImageFrame.open();
+                    });
+                    
+                    // Remove clients image
+                    $(document).on('click', '.remove-clients-image', function(e) {
+                        e.preventDefault();
+                        $('#about_clients_image_id').val('');
+                        $('#about-clients-image-preview').html('');
+                    });
+                });
+            ");
+        }
+    }
+}
+add_action('admin_enqueue_scripts', 'new_horizon_about_admin_scripts');

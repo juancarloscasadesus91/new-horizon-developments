@@ -18,35 +18,43 @@ while (have_posts()) : the_post();
     $intro_text_3 = get_post_meta($page_id, '_about_intro_text_3', true);
     $intro_image = get_post_meta($page_id, '_about_intro_image', true);
     
-    // Differences Section
-    $diff_title = get_post_meta($page_id, '_about_diff_title', true);
-    $diff_subtitle = get_post_meta($page_id, '_about_diff_subtitle', true);
-    $differences = get_post_meta($page_id, '_about_differences', true);
-    
-    // Values Section
-    $values_title = get_post_meta($page_id, '_about_values_title', true);
-    $values_lead = get_post_meta($page_id, '_about_values_lead', true);
-    $values = get_post_meta($page_id, '_about_values', true);
-    $values_image = get_post_meta($page_id, '_about_values_image', true);
+    // Combined Section
+    $combined_title = get_post_meta($page_id, '_about_combined_title', true);
+    $combined_subtitle = get_post_meta($page_id, '_about_combined_subtitle', true);
+    $combined_items = get_post_meta($page_id, '_about_combined_items', true);
     
     // Clients Section
     $clients_title = get_post_meta($page_id, '_about_clients_title', true);
     $clients_lead = get_post_meta($page_id, '_about_clients_lead', true);
     $clients_text_1 = get_post_meta($page_id, '_about_clients_text_1', true);
     $clients_text_2 = get_post_meta($page_id, '_about_clients_text_2', true);
-    
-    // Capabilities Section
-    $cap_title = get_post_meta($page_id, '_about_cap_title', true);
-    $cap_subtitle = get_post_meta($page_id, '_about_cap_subtitle', true);
-    $capabilities = get_post_meta($page_id, '_about_capabilities', true);
+    $clients_image = get_post_meta($page_id, '_about_clients_image', true);
     
 endwhile;
 wp_reset_postdata();
 
 // Default image fallback
 $default_image = get_template_directory_uri() . '/images/hero-timber-home.jpg';
-if (empty($intro_image)) $intro_image = $default_image;
-if (empty($values_image)) $values_image = $default_image;
+
+// Get intro image URL from ID
+if ($intro_image) {
+    $intro_image_url = wp_get_attachment_image_url($intro_image, 'large');
+    if (!$intro_image_url) {
+        $intro_image_url = $default_image;
+    }
+} else {
+    $intro_image_url = $default_image;
+}
+
+// Get clients image URL from ID
+if ($clients_image) {
+    $clients_image_url = wp_get_attachment_image_url($clients_image, 'full');
+    if (!$clients_image_url) {
+        $clients_image_url = $default_image;
+    }
+} else {
+    $clients_image_url = $default_image;
+}
 ?>
 
 <!-- About Hero Section -->
@@ -76,38 +84,38 @@ if (empty($values_image)) $values_image = $default_image;
                 <?php endif; ?>
             </div>
             <div class="about-intro-image reveal">
-                <img src="<?php echo esc_url($intro_image); ?>" alt="Luxury Custom Home">
+                <img src="<?php echo esc_url($intro_image_url); ?>" alt="Luxury Custom Home">
             </div>
         </div>
     </div>
 </section>
 
-<!-- What Sets Us Apart -->
-<?php if ($differences && is_array($differences) && count($differences) > 0) : ?>
-<section class="about-difference-section section" style="background: var(--color-gray-dark);">
+<!-- What We Handle & What Sets Us Apart (Combined) -->
+<?php if ($combined_items && is_array($combined_items) && count($combined_items) > 0) : ?>
+<section class="about-combined-section section">
     <div class="container">
         <div class="section-title">
-            <h2><?php echo $diff_title ? esc_html($diff_title) : 'What Sets Us Apart'; ?></h2>
-            <?php if ($diff_subtitle) : ?>
-                <p><?php echo esc_html($diff_subtitle); ?></p>
+            <h2><?php echo $combined_title ? esc_html($combined_title) : 'What We Handle & What Sets Us Apart'; ?></h2>
+            <?php if ($combined_subtitle) : ?>
+                <p><?php echo esc_html($combined_subtitle); ?></p>
             <?php endif; ?>
         </div>
         
-        <div class="grid grid-3">
-            <?php foreach ($differences as $diff) : 
-                if (empty($diff['title']) && empty($diff['description'])) continue;
+        <div class="combined-items-list">
+            <?php foreach ($combined_items as $index => $item) : 
+                if (empty($item['title']) && empty($item['description'])) continue;
             ?>
-            <div class="difference-card reveal">
-                <?php if (!empty($diff['icon'])) : ?>
-                <div class="difference-icon">
-                    <i class="<?php echo esc_attr($diff['icon']); ?>"></i>
+            <div class="combined-item reveal" style="animation-delay: <?php echo ($index * 0.1); ?>s;">
+                <?php if (!empty($item['icon'])) : ?>
+                <div class="combined-icon">
+                    <i class="<?php echo esc_attr($item['icon']); ?>"></i>
                 </div>
                 <?php endif; ?>
-                <?php if (!empty($diff['title'])) : ?>
-                <h3><?php echo esc_html($diff['title']); ?></h3>
+                <?php if (!empty($item['title'])) : ?>
+                <h3><?php echo esc_html($item['title']); ?></h3>
                 <?php endif; ?>
-                <?php if (!empty($diff['description'])) : ?>
-                <p><?php echo esc_html($diff['description']); ?></p>
+                <?php if (!empty($item['description'])) : ?>
+                <p><?php echo esc_html($item['description']); ?></p>
                 <?php endif; ?>
             </div>
             <?php endforeach; ?>
@@ -116,47 +124,9 @@ if (empty($values_image)) $values_image = $default_image;
 </section>
 <?php endif; ?>
 
-<!-- Our Values -->
-<?php if ($values && is_array($values) && count($values) > 0) : ?>
-<section class="about-values-section section">
-    <div class="container">
-        <div class="values-content-grid">
-            <div class="values-text reveal">
-                <h2><?php echo $values_title ? esc_html($values_title) : 'Our Commitment to You'; ?></h2>
-                <?php if ($values_lead) : ?>
-                    <p class="lead-text"><?php echo esc_html($values_lead); ?></p>
-                <?php endif; ?>
-                
-                <div class="values-list">
-                    <?php foreach ($values as $value) : 
-                        if (empty($value['title']) && empty($value['description'])) continue;
-                    ?>
-                    <div class="value-item">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <?php if (!empty($value['title'])) : ?>
-                            <h4><?php echo esc_html($value['title']); ?></h4>
-                            <?php endif; ?>
-                            <?php if (!empty($value['description'])) : ?>
-                            <p><?php echo esc_html($value['description']); ?></p>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            
-            <div class="values-image reveal">
-                <img src="<?php echo esc_url($values_image); ?>" alt="Craftsmanship">
-            </div>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
-
 <!-- Who We Build For -->
 <?php if ($clients_title || $clients_lead || $clients_text_1 || $clients_text_2) : ?>
-<section class="about-clients-section section" style="background: var(--color-gray-dark);">
+<section class="about-clients-section" style="background: linear-gradient(135deg, rgba(10,10,10,0.85) 0%, rgba(26,26,26,0.90) 100%), url('<?php echo esc_url($clients_image_url); ?>') center/cover; background-attachment: fixed;">
     <div class="container">
         <div class="clients-content">
             <div class="section-title">
@@ -179,40 +149,8 @@ if (empty($values_image)) $values_image = $default_image;
 </section>
 <?php endif; ?>
 
-<!-- Capabilities -->
-<?php if ($capabilities && is_array($capabilities) && count($capabilities) > 0) : ?>
-<section class="about-capabilities-section section">
-    <div class="container">
-        <div class="section-title">
-            <h2><?php echo $cap_title ? esc_html($cap_title) : 'What We Handle'; ?></h2>
-            <?php if ($cap_subtitle) : ?>
-                <p><?php echo esc_html($cap_subtitle); ?></p>
-            <?php endif; ?>
-        </div>
-        
-        <div class="grid grid-2">
-            <?php foreach ($capabilities as $cap) : 
-                if (empty($cap['title']) && empty($cap['description'])) continue;
-            ?>
-            <div class="capability-card reveal">
-                <?php if (!empty($cap['icon'])) : ?>
-                <i class="<?php echo esc_attr($cap['icon']); ?>"></i>
-                <?php endif; ?>
-                <?php if (!empty($cap['title'])) : ?>
-                <h3><?php echo esc_html($cap['title']); ?></h3>
-                <?php endif; ?>
-                <?php if (!empty($cap['description'])) : ?>
-                <p><?php echo esc_html($cap['description']); ?></p>
-                <?php endif; ?>
-            </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
-
 <!-- CTA Section -->
-<section class="about-cta-section section" style="background: linear-gradient(135deg, rgba(10,10,10,0.95) 0%, rgba(26,26,26,0.98) 100%), url('<?php echo $default_image; ?>') center/cover; background-attachment: fixed;">
+<section class="about-cta-section">
     <div class="container">
         <div class="cta-content reveal">
             <h2>Ready to Build with the Right Team?</h2>
