@@ -156,7 +156,7 @@ if ($clients_image) {
             <h2>Ready to Build with the Right Team?</h2>
             <p>A home of this scale deserves more than construction alone. It deserves careful guidance, direct communication, and a process built to support your vision from the start.</p>
             <div class="cta-buttons" style="margin-bottom: 3rem;">
-                <a href="/services/" class="btn btn-outline">Explore Our Process</a>
+                <a href="<?php echo home_url('/services/'); ?>" class="btn btn-outline">Explore Our Process</a>
             </div>
         </div>
     </div>
