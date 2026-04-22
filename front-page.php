@@ -160,52 +160,6 @@ get_header();
     </div>
 </section>
 
-<!-- Why Choose Us Section -->
-<section class="why-us-section section" id="about">
-    <div class="container">
-        <?php
-        // Get front page ID
-        $front_page_id = get_option('page_on_front');
-        
-        $why_subtitle = get_post_meta($front_page_id, '_why_subtitle', true);
-        $why_title = get_post_meta($front_page_id, '_why_title', true);
-        $why_description = get_post_meta($front_page_id, '_why_description', true);
-        $why_items = get_post_meta($front_page_id, '_why_items', true);
-        
-        // Default values if not set
-        if (!$why_subtitle) $why_subtitle = 'Why Choose Us';
-        if (!$why_title) $why_title = 'Building Excellence Since 1995';
-        if (!$why_description) $why_description = 'Trusted by hundreds of families across America';
-        
-        if (!is_array($why_items) || empty($why_items)) {
-            $why_items = array(
-                array('number' => '25+', 'title' => 'Years of Experience', 'description' => 'Over two decades of expertise in timber home construction, delivering exceptional quality and craftsmanship.'),
-                array('number' => '500+', 'title' => 'Homes Built', 'description' => 'Successfully completed over 500 custom timber homes, each one a testament to our commitment to excellence.'),
-                array('number' => '100%', 'title' => 'Satisfaction Rate', 'description' => 'Every client is a satisfied client. We don\'t rest until your dream home exceeds your expectations.'),
-                array('number' => 'A+', 'title' => 'BBB Rating', 'description' => 'Accredited with the Better Business Bureau with an A+ rating, reflecting our integrity and customer service.'),
-            );
-        }
-        ?>
-        <div class="section-title">
-            <p class="section-subtitle"><?php echo esc_html($why_subtitle); ?></p>
-            <h2><?php echo esc_html($why_title); ?></h2>
-            <p><?php echo esc_html($why_description); ?></p>
-        </div>
-
-        <div class="why-us-grid">
-            <?php foreach ($why_items as $item) : 
-                if (empty($item['number']) && empty($item['title'])) continue;
-            ?>
-                <div class="why-us-item reveal">
-                    <div class="why-us-number"><?php echo esc_html($item['number']); ?></div>
-                    <h3><?php echo esc_html($item['title']); ?></h3>
-                    <p><?php echo esc_html($item['description']); ?></p>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
 <!-- Testimonials Section -->
 <section class="testimonials-section section" id="testimonials">
     <div class="container">

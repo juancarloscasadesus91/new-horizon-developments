@@ -574,51 +574,6 @@ p {
 }
 
 /* ========================================
-   WHY CHOOSE US
-======================================== */
-.why-us-section {
-    background: var(--color-gray-dark);
-    color: var(--color-white);
-}
-
-.why-us-section .section-title h2,
-.why-us-section .section-subtitle {
-    color: var(--color-white);
-}
-
-.why-us-section .section-subtitle {
-    color: var(--color-gold);
-}
-
-.why-us-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-lg);
-}
-
-.why-us-item {
-    text-align: center;
-}
-
-.why-us-number {
-    font-size: 3.5rem;
-    font-weight: 300;
-    color: var(--color-gold);
-    font-family: var(--font-primary);
-    margin-bottom: var(--spacing-sm);
-}
-
-.why-us-item h3 {
-    color: var(--color-white);
-    margin-bottom: var(--spacing-sm);
-    font-size: 1.25rem;
-}
-
-.why-us-item p {
-    color: rgba(255,255,255,0.9);
-}
-
-/* ========================================
    TESTIMONIALS
 ======================================== */
 .testimonials-section {
