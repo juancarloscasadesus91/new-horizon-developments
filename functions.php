@@ -2184,3 +2184,67 @@ function new_horizon_about_admin_scripts($hook) {
     }
 }
 add_action('admin_enqueue_scripts', 'new_horizon_about_admin_scripts');
+
+/**
+ * Add Footer Quick Links Visibility Meta Box for Pages
+ */
+function new_horizon_add_footer_visibility_meta_box() {
+    add_meta_box(
+        'footer_quick_links_visibility',
+        __('Footer Quick Links', 'new-horizon'),
+        'new_horizon_footer_visibility_callback',
+        'page',
+        'side',
+        'default'
+    );
+}
+add_action('add_meta_boxes', 'new_horizon_add_footer_visibility_meta_box');
+
+/**
+ * Footer Visibility Meta Box Callback
+ */
+function new_horizon_footer_visibility_callback($post) {
+    wp_nonce_field('new_horizon_save_footer_visibility', 'new_horizon_footer_visibility_nonce');
+    
+    $hide_from_footer = get_post_meta($post->ID, '_hide_from_footer_quick_links', true);
+    ?>
+    <p>
+        <label>
+            <input type="checkbox" name="hide_from_footer_quick_links" value="1" <?php checked($hide_from_footer, '1'); ?> />
+            <?php esc_html_e('Hide this page from Footer Quick Links', 'new-horizon'); ?>
+        </label>
+    </p>
+    <p class="description">
+        <?php esc_html_e('Check this box to prevent this page from appearing in the footer Quick Links section.', 'new-horizon'); ?>
+    </p>
+    <?php
+}
+
+/**
+ * Save Footer Visibility Meta Box Data
+ */
+function new_horizon_save_footer_visibility_meta($post_id) {
+    // Check nonce
+    if (!isset($_POST['new_horizon_footer_visibility_nonce']) || 
+        !wp_verify_nonce($_POST['new_horizon_footer_visibility_nonce'], 'new_horizon_save_footer_visibility')) {
+        return;
+    }
+    
+    // Check autosave
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    // Check permissions
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    // Save or delete the meta
+    if (isset($_POST['hide_from_footer_quick_links'])) {
+        update_post_meta($post_id, '_hide_from_footer_quick_links', '1');
+    } else {
+        delete_post_meta($post_id, '_hide_from_footer_quick_links');
+    }
+}
+add_action('save_post_page', 'new_horizon_save_footer_visibility_meta');

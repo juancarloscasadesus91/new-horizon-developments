@@ -58,7 +58,8 @@
                         // First show priority pages
                         foreach ($priority_pages as $slug) {
                             foreach ($pages as $page) {
-                                if ($page->post_name === $slug && !in_array($page->ID, $displayed)) {
+                                $hide_from_footer = get_post_meta($page->ID, '_hide_from_footer_quick_links', true);
+                                if ($page->post_name === $slug && !in_array($page->ID, $displayed) && $hide_from_footer !== '1') {
                                     echo '<a href="' . get_permalink($page->ID) . '">' . esc_html($page->post_title) . '</a>';
                                     $displayed[] = $page->ID;
                                     break;
@@ -70,7 +71,8 @@
                         $count = count($displayed);
                         if ($count < 6) {
                             foreach ($pages as $page) {
-                                if (!in_array($page->ID, $displayed) && $count < 6) {
+                                $hide_from_footer = get_post_meta($page->ID, '_hide_from_footer_quick_links', true);
+                                if (!in_array($page->ID, $displayed) && $count < 6 && $hide_from_footer !== '1') {
                                     echo '<a href="' . get_permalink($page->ID) . '">' . esc_html($page->post_title) . '</a>';
                                     $displayed[] = $page->ID;
                                     $count++;
