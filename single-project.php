@@ -208,7 +208,7 @@ wp_enqueue_script('lightbox-js', 'https://cdnjs.cloudflare.com/ajax/libs/lightbo
                         <a href="https://wa.me/<?php echo esc_attr($whatsapp); ?>" class="btn btn-whatsapp btn-block" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-whatsapp"></i> <?php esc_html_e('WhatsApp Us', 'new-horizon'); ?>
                         </a>
-                        <a href="<?php echo esc_url(home_url('/#contact')); ?>" class="btn btn-outline btn-block">
+                        <a href="<?php echo esc_url(home_url('/#contact')); ?>" class="btn btn-outline btn-block" style="font-size: 0.75rem; letter-spacing: 0.5px; padding: 0.875rem 1rem;">
                             <i class="fas fa-envelope"></i> <?php esc_html_e('BEGIN YOUR PROJECT →', 'new-horizon'); ?>
                         </a>
                     </div>
