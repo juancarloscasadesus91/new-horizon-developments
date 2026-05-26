@@ -174,18 +174,18 @@ get_header();
             $testimonials = array(
                 array(
                     'content' => __('Working with Timber Homes was an absolute dream. From the initial design consultation to the final walkthrough, their team was professional, responsive, and incredibly skilled. Our mountain retreat is everything we hoped for and more. The craftsmanship is outstanding!', 'timber-homes'),
-                    'name'    => 'Sarah & John Mitchell',
-                    'location' => 'Colorado Springs, CO',
+                    'name'    => 'Marcus & Danielle T.',
+                    'location' => 'Johns Creek, GA',
                 ),
                 array(
-                    'content' => __('We\'ve lived in our timber home for three years now, and it still takes our breath away every single day. The quality of materials and attention to detail is exceptional. Timber Homes delivered on every promise and stayed within our budget. Highly recommended!', 'timber-homes'),
-                    'name'    => 'David & Emily Thompson',
-                    'location' => 'Bozeman, MT',
+                    'content' => __('From our first conversation to the final walkthrough, the NHD team was professional, communicative, and genuinely invested in our vision. Our home is everything we dreamed it would be and more.', 'timber-homes'),
+                    'name'    => 'James & Priya R.',
+                    'location' => 'Atlanta, GA',
                 ),
                 array(
-                    'content' => __('As a retired architect, I had very specific requirements for our retirement home. The team at Timber Homes not only met but exceeded my expectations. Their expertise in timber construction is unmatched, and their commitment to sustainability impressed us greatly.', 'timber-homes'),
-                    'name'    => 'Robert & Linda Anderson',
-                    'location' => 'Jackson Hole, WY',
+                    'content' => __('We"ve worked with other builders before, but nothing compares to the attention to detail and personal service we received from New Horizon. They treated our home like it was their own.', 'timber-homes'),
+                    'name'    => 'Chris & Lauren M.',
+                    'location' => 'Buford, GA',
                 ),
             );
 
@@ -234,10 +234,10 @@ get_header();
                 <h3><?php esc_html_e('Contact Information', 'timber-homes'); ?></h3>
                 
                 <?php
-                $address = get_theme_mod('timber_homes_address', '123 Main Street, Denver, CO 80202');
-                $phone = get_theme_mod('timber_homes_phone', '+1 (555) 123-4567');
-                $email = get_theme_mod('timber_homes_email', 'info@timberhomes.com');
-                $whatsapp = get_theme_mod('timber_homes_whatsapp', '15551234567');
+                $address = get_theme_mod('timber_homes_address', '134 Industrial Park Dr, Lawrenceville, GA');
+                $phone = get_theme_mod('timber_homes_phone', '+1 678-818-9424');
+                $email = get_theme_mod('timber_homes_email', 'admin@newhorizondevelopments.us');
+                $whatsapp = get_theme_mod('timber_homes_whatsapp', 'Mon–Fri: 8am–6pm EST');
                 ?>
 
                 <div class="contact-item">
