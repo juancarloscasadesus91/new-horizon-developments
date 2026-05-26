@@ -71,6 +71,13 @@ wp_reset_postdata();
             endif;
             ?>
         </div>
+        
+        <!-- Call to Action Button -->
+        <div class="services-cta" style="text-align: center; margin-top: 60px;">
+            <a href="<?php echo home_url('/#contact'); ?>" class="btn btn-primary">
+                <?php esc_html_e('START YOUR PROJECT →', 'new-horizon'); ?>
+            </a>
+        </div>
     </div>
 </section>
 
