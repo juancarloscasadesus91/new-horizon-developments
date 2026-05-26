@@ -224,14 +224,14 @@ get_header();
     <div class="container">
         <div class="section-title">
             <p class="section-subtitle"><?php esc_html_e('Get In Touch', 'timber-homes'); ?></p>
-            <h2><?php esc_html_e('Start Your Timber Home Journey', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Let\'s discuss your dream home project', 'timber-homes'); ?></p>
+            <h2><?php esc_html_e('Let\'s Talk About Your Vision', 'timber-homes'); ?></h2>
+            <p><?php esc_html_e('Tell us about your project — we\'ll follow up within 24 hours.', 'timber-homes'); ?></p>
         </div>
 
         <div class="contact-grid">
             <!-- Contact Information -->
             <div class="contact-info">
-                <h3><?php esc_html_e('Contact Information', 'timber-homes'); ?></h3>
+                <h3><?php esc_html_e('Reach Us Directly', 'timber-homes'); ?></h3>
                 
                 <?php
                 $address = get_theme_mod('timber_homes_address', '134 Industrial Park Dr, Lawrenceville, GA');
