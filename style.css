@@ -2339,3 +2339,413 @@ select:focus {
         scroll-behavior: auto !important;
     }
 }
+
+/* ========================================
+   CASE STUDY TEMPLATE STYLES
+======================================== */
+
+/* Case Study Hero */
+.case-study-hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.case-study-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(14,14,14,0) 0%, rgba(14,14,14,0) 65%, rgba(14,14,14,0.3) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.case-study-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.case-study-eyebrow {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.case-study-title {
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+.case-study-subtitle {
+    animation: fadeInUp 0.8s ease-out 0.4s backwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scroll Indicator Animation */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.scroll-indicator {
+    animation: fadeIn 1s ease-out 1s backwards;
+}
+
+/* Case Study Intro Section */
+.case-study-intro {
+    border-top: 1px solid rgba(184, 149, 42, 0.1);
+    border-bottom: 1px solid rgba(184, 149, 42, 0.1);
+}
+
+.case-study-stats {
+    opacity: 0.8;
+    transition: opacity var(--transition-normal);
+}
+
+.case-study-stats:hover {
+    opacity: 1;
+}
+
+.case-study-quote {
+    position: relative;
+    padding: 0 2rem;
+}
+
+.case-study-quote::before {
+    content: '"';
+    position: absolute;
+    left: -10px;
+    top: -20px;
+    font-size: 6rem;
+    color: var(--color-gold);
+    opacity: 0.2;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+/* Case Study Content */
+.case-study-description {
+    font-weight: 300;
+}
+
+.case-study-description p {
+    margin-bottom: 1.5rem;
+}
+
+.case-study-description p:last-child {
+    margin-bottom: 0;
+}
+
+/* Case Study Gallery */
+.case-study-gallery .gallery-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.case-study-image-wrapper {
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--color-dark-2);
+}
+
+.case-study-image-wrapper img {
+    transition: transform 0.6s ease;
+}
+
+.case-study-image-wrapper:hover img {
+    transform: scale(1.05);
+}
+
+.image-caption {
+    font-style: italic;
+}
+
+/* Case Study CTA */
+.case-study-cta {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.case-study-cta h2 {
+    line-height: 1.3;
+}
+
+.case-study-cta .btn {
+    transition: all var(--transition-normal);
+}
+
+.case-study-cta .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(184, 149, 42, 0.3);
+}
+
+/* Responsive Case Study Styles */
+@media (max-width: 1024px) {
+    .case-study-hero {
+        min-height: 70vh !important;
+    }
+    
+    .case-study-title {
+        font-size: 3rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .case-study-hero {
+        min-height: 60vh !important;
+    }
+    
+    .case-study-hero-content {
+        padding-bottom: 2rem !important;
+    }
+    
+    .case-study-title {
+        font-size: 2.5rem !important;
+    }
+    
+    .case-study-subtitle {
+        font-size: 1rem !important;
+    }
+    
+    .case-study-stats {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        text-align: center;
+    }
+    
+    .case-study-stats span:nth-child(even) {
+        display: none;
+    }
+    
+    .case-study-quote {
+        font-size: 1.5rem !important;
+        padding: 0 1rem;
+    }
+    
+    .case-study-quote::before {
+        font-size: 4rem;
+        left: -5px;
+        top: -15px;
+    }
+    
+    .case-study-gallery .gallery-row {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+    
+    .case-study-description {
+        font-size: 1rem !important;
+    }
+    
+    .case-study-cta {
+        padding: 2rem 1.5rem !important;
+    }
+    
+    .case-study-cta h2 {
+        font-size: 1.75rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .case-study-eyebrow {
+        font-size: 10px !important;
+    }
+    
+    .case-study-title {
+        font-size: 2rem !important;
+    }
+    
+    .scroll-indicator {
+        bottom: 1rem !important;
+    }
+}
+
+/* ========================================
+   IMAGE GALLERY & LIGHTBOX
+======================================== */
+
+/* Image Gallery Uniform Sizing */
+.cs-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    height: 400px;
+}
+
+.cs-image-wrapper img {
+    width: 100%;
+    height: 400px !important;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+/* Hover Effect - Zoom + Magnifier Icon */
+.cs-image-wrapper:hover img {
+    transform: scale(1.05);
+    filter: brightness(0.8);
+}
+
+.cs-image-wrapper::after {
+    content: '\f00e';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    color: #D4AF37;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.cs-image-wrapper:hover::after {
+    opacity: 1;
+}
+
+/* Lightbox Modal */
+.cs-lightbox {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.cs-lightbox.active {
+    display: flex;
+}
+
+.cs-lightbox-content {
+    max-width: 90%;
+    max-height: 90vh;
+    position: relative;
+    animation: zoomIn 0.3s ease;
+}
+
+.cs-lightbox-content img {
+    width: 100%;
+    height: auto;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.cs-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 3rem;
+    color: #fff;
+    cursor: pointer;
+    z-index: 10000;
+    transition: color 0.3s ease;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.cs-lightbox-close:hover {
+    color: #D4AF37;
+}
+
+.cs-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    color: #fff;
+    cursor: pointer;
+    padding: 20px;
+    user-select: none;
+    transition: color 0.3s ease;
+}
+
+.cs-lightbox-nav:hover {
+    color: #D4AF37;
+}
+
+.cs-lightbox-prev {
+    left: 20px;
+}
+
+.cs-lightbox-next {
+    right: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Grid Images - Uniform Height */
+.cs-two-col .cs-image-wrapper,
+.cs-grid-2x2 .cs-image-wrapper {
+    height: 400px;
+}
+
+.cs-two-col .cs-image-wrapper img,
+.cs-grid-2x2 .cs-image-wrapper img {
+    height: 400px !important;
+    object-fit: cover;
+}
+
+/* Exterior, Living, Kitchen, Office sections - all same height */
+.cs-exterior .cs-image-wrapper,
+.cs-living-dining .cs-image-wrapper,
+.cs-kitchen .cs-image-wrapper,
+.cs-office-powder .cs-image-wrapper,
+.cs-primary-suite .cs-image-wrapper {
+    height: 400px;
+}
+
+.cs-exterior .cs-image-wrapper img,
+.cs-living-dining .cs-image-wrapper img,
+.cs-kitchen .cs-image-wrapper img,
+.cs-office-powder .cs-image-wrapper img,
+.cs-primary-suite .cs-image-wrapper img {
+    height: 400px !important;
+    object-fit: cover;
+}
+
+/* Foyer Large Image - exception */
+.cs-foyer .cs-image-wrapper {
+    height: 60vh;
+    min-height: 500px;
+}
+
+.cs-foyer .cs-image-wrapper img {
+    height: 100% !important;
+    min-height: 500px;
+    object-fit: cover;
+}

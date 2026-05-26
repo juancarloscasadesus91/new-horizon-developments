@@ -1119,6 +1119,97 @@ function new_horizon_add_meta_boxes() {
         'normal',
         'high'
     );
+    
+    // Add Case Study specific meta boxes (always add them, we'll show/hide with JS)
+    add_meta_box(
+        'case_study_specs',
+        __('📊 Case Study Specifications', 'new-horizon'),
+        'new_horizon_case_study_specs_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_hero',
+        __('🎯 Section 01: Hero Section', 'new-horizon'),
+        'new_horizon_case_study_hero_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_intro',
+        __('💬 Section 02: Intro Quote', 'new-horizon'),
+        'new_horizon_case_study_intro_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_exterior',
+        __('🏠 Section 03: Exterior Images', 'new-horizon'),
+        'new_horizon_case_study_exterior_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_foyer',
+        __('✨ Section 04: Entry Foyer', 'new-horizon'),
+        'new_horizon_case_study_foyer_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_living',
+        __('🛋️ Section 05: Living & Dining', 'new-horizon'),
+        'new_horizon_case_study_living_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_kitchen',
+        __('🍳 Section 06: Kitchen', 'new-horizon'),
+        'new_horizon_case_study_kitchen_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_primary',
+        __('🛏️ Section 07: Primary Suite', 'new-horizon'),
+        'new_horizon_case_study_primary_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_office',
+        __('💼 Section 08: Office & Powder', 'new-horizon'),
+        'new_horizon_case_study_office_callback',
+        'project',
+        'normal',
+        'high'
+    );
+    
+    add_meta_box(
+        'case_study_floorplans',
+        __('📐 Section 09: Floor Plans', 'new-horizon'),
+        'new_horizon_case_study_floorplans_callback',
+        'project',
+        'normal',
+        'high'
+    );
 }
 add_action('add_meta_boxes', 'new_horizon_add_meta_boxes');
 
@@ -1129,7 +1220,32 @@ function new_horizon_project_details_callback($post) {
     $size = get_post_meta($post->ID, '_project_size', true);
     $year = get_post_meta($post->ID, '_project_year', true);
     $featured = get_post_meta($post->ID, '_project_featured', true);
+    $template_type = get_post_meta($post->ID, '_project_template_type', true);
+    if (empty($template_type)) {
+        $template_type = 'standard';
+    }
     ?>
+    <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+        <p style="margin: 0 0 10px 0;">
+            <strong><?php _e('Project Display Template:', 'new-horizon'); ?></strong>
+        </p>
+        <p style="margin: 0 0 8px 0;">
+            <label>
+                <input type="radio" name="project_template_type" value="standard" <?php checked($template_type, 'standard'); ?>>
+                <strong><?php _e('Standard Project', 'new-horizon'); ?></strong> — <?php _e('Default project layout', 'new-horizon'); ?>
+            </label>
+        </p>
+        <p style="margin: 0;">
+            <label>
+                <input type="radio" name="project_template_type" value="case-study" <?php checked($template_type, 'case-study'); ?>>
+                <strong style="color: #B8952A;"><?php _e('Case Study (Premium)', 'new-horizon'); ?></strong> — <?php _e('Full editorial layout with detailed sections', 'new-horizon'); ?>
+            </label>
+        </p>
+        <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">
+            <em><?php _e('Case Study template requires additional fields below. Save as draft first, then fill in case study sections.', 'new-horizon'); ?></em>
+        </p>
+    </div>
+    
     <p>
         <label for="project_location"><?php _e('Location:', 'new-horizon'); ?></label><br>
         <input type="text" id="project_location" name="project_location" value="<?php echo esc_attr($location); ?>" style="width: 100%;">
@@ -1152,6 +1268,45 @@ function new_horizon_project_details_callback($post) {
         <strong><?php _e('Project Gallery:', 'new-horizon'); ?></strong><br>
         <em><?php _e('Set the Featured Image as the main project image. For additional gallery images, use a gallery plugin or add them in the content editor.', 'new-horizon'); ?></em>
     </p>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        function toggleCaseStudyMetaBoxes() {
+            var templateType = $('input[name="project_template_type"]:checked').val();
+            
+            var caseStudyBoxes = [
+                '#case_study_specs',
+                '#case_study_hero',
+                '#case_study_intro',
+                '#case_study_exterior',
+                '#case_study_foyer',
+                '#case_study_living',
+                '#case_study_kitchen',
+                '#case_study_primary',
+                '#case_study_office',
+                '#case_study_floorplans'
+            ];
+            
+            if (templateType === 'case-study') {
+                caseStudyBoxes.forEach(function(box) {
+                    $(box).show();
+                });
+            } else {
+                caseStudyBoxes.forEach(function(box) {
+                    $(box).hide();
+                });
+            }
+        }
+        
+        // Run on page load
+        toggleCaseStudyMetaBoxes();
+        
+        // Run when template type changes
+        $('input[name="project_template_type"]').on('change', function() {
+            toggleCaseStudyMetaBoxes();
+        });
+    });
+    </script>
     <?php
 }
 
@@ -1184,6 +1339,13 @@ function new_horizon_save_project_details($post_id) {
         update_post_meta($post_id, '_project_year', sanitize_text_field($_POST['project_year']));
     }
     
+    if (isset($_POST['project_template_type'])) {
+        $template_type = sanitize_text_field($_POST['project_template_type']);
+        if (in_array($template_type, array('standard', 'case-study'))) {
+            update_post_meta($post_id, '_project_template_type', $template_type);
+        }
+    }
+    
     if (isset($_POST['project_featured'])) {
         update_post_meta($post_id, '_project_featured', '1');
     } else {
@@ -1191,6 +1353,25 @@ function new_horizon_save_project_details($post_id) {
     }
 }
 add_action('save_post_project', 'new_horizon_save_project_details');
+
+/**
+ * Load Case Study Template for Projects
+ */
+function new_horizon_load_case_study_template($template) {
+    if (is_singular('project')) {
+        global $post;
+        $template_type = get_post_meta($post->ID, '_project_template_type', true);
+        
+        if ($template_type === 'case-study') {
+            $case_study_template = locate_template('single-project-case-study.php');
+            if ($case_study_template) {
+                return $case_study_template;
+            }
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'new_horizon_load_case_study_template');
 
 /**
  * Customizer Settings
@@ -2248,3 +2429,698 @@ function new_horizon_save_footer_visibility_meta($post_id) {
     }
 }
 add_action('save_post_page', 'new_horizon_save_footer_visibility_meta');
+
+/**
+ * Case Study Specifications Meta Box Callback
+ */
+function new_horizon_case_study_specs_callback($post) {
+    wp_nonce_field('new_horizon_save_case_study', 'new_horizon_case_study_nonce');
+    
+    $cs_bedrooms = get_post_meta($post->ID, '_cs_bedrooms', true);
+    $cs_bathrooms = get_post_meta($post->ID, '_cs_bathrooms', true);
+    $cs_acres = get_post_meta($post->ID, '_cs_acres', true);
+    $cs_garage = get_post_meta($post->ID, '_cs_garage', true);
+    $cs_basement = get_post_meta($post->ID, '_cs_basement', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;">
+        <em><?php _e('These specs will appear in the stats bar and throughout the case study.', 'new-horizon'); ?></em>
+    </p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <p>
+            <label for="cs_bedrooms"><strong><?php _e('Bedrooms:', 'new-horizon'); ?></strong></label><br>
+            <input type="text" id="cs_bedrooms" name="cs_bedrooms" value="<?php echo esc_attr($cs_bedrooms); ?>" placeholder="e.g., 5" style="width: 100%;">
+        </p>
+        <p>
+            <label for="cs_bathrooms"><strong><?php _e('Bathrooms:', 'new-horizon'); ?></strong></label><br>
+            <input type="text" id="cs_bathrooms" name="cs_bathrooms" value="<?php echo esc_attr($cs_bathrooms); ?>" placeholder="e.g., 4.5" style="width: 100%;">
+        </p>
+        <p>
+            <label for="cs_acres"><strong><?php _e('Acres:', 'new-horizon'); ?></strong></label><br>
+            <input type="text" id="cs_acres" name="cs_acres" value="<?php echo esc_attr($cs_acres); ?>" placeholder="e.g., 1.3" style="width: 100%;">
+        </p>
+        <p>
+            <label for="cs_garage"><strong><?php _e('Garage:', 'new-horizon'); ?></strong></label><br>
+            <input type="text" id="cs_garage" name="cs_garage" value="<?php echo esc_attr($cs_garage); ?>" placeholder="e.g., 3-Car" style="width: 100%;">
+        </p>
+    </div>
+    <p>
+        <label for="cs_basement"><strong><?php _e('Basement:', 'new-horizon'); ?></strong></label><br>
+        <input type="text" id="cs_basement" name="cs_basement" value="<?php echo esc_attr($cs_basement); ?>" placeholder="e.g., Unfinished Basement" style="width: 100%;">
+    </p>
+    <?php
+}
+
+/**
+ * Case Study Hero Section Meta Box Callback
+ */
+function new_horizon_case_study_hero_callback($post) {
+    $hero_image = get_post_meta($post->ID, '_cs_hero_image', true);
+    $hero_eyebrow = get_post_meta($post->ID, '_cs_hero_eyebrow', true);
+    $hero_subtitle = get_post_meta($post->ID, '_cs_hero_subtitle', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;">
+        <em><?php _e('The hero section is the first thing visitors see. Make it count.', 'new-horizon'); ?></em>
+    </p>
+    
+    <p>
+        <label for="cs_hero_image"><strong><?php _e('Hero Image:', 'new-horizon'); ?></strong></label><br>
+        <input type="hidden" id="cs_hero_image" name="cs_hero_image" value="<?php echo esc_attr($hero_image); ?>">
+        <button type="button" class="button upload-hero-image-button"><?php _e('Select Hero Image', 'new-horizon'); ?></button>
+        <button type="button" class="button remove-hero-image-button" style="<?php echo $hero_image ? '' : 'display:none;'; ?>"><?php _e('Remove Image', 'new-horizon'); ?></button>
+        <div id="hero-image-preview" style="margin-top: 10px;">
+            <?php if ($hero_image) : 
+                $image_url = wp_get_attachment_url($hero_image);
+            ?>
+                <img src="<?php echo esc_url($image_url); ?>" style="max-width: 300px; height: auto; display: block; border: 1px solid #ddd;">
+            <?php endif; ?>
+        </div>
+        <small style="display: block; margin-top: 5px; color: #666;"><?php _e('Recommended: High-resolution aerial or exterior shot (min 1920x1080)', 'new-horizon'); ?></small>
+    </p>
+    
+    <p>
+        <label for="cs_hero_eyebrow"><strong><?php _e('Eyebrow Text (optional):', 'new-horizon'); ?></strong></label><br>
+        <input type="text" id="cs_hero_eyebrow" name="cs_hero_eyebrow" value="<?php echo esc_attr($hero_eyebrow); ?>" placeholder="e.g., Suwanee, Georgia · 9,262 Sq Ft · 1.3 Acres" style="width: 100%;">
+        <small style="display: block; margin-top: 5px; color: #666;"><?php _e('Leave blank to auto-generate from Location, Size, and Acres fields', 'new-horizon'); ?></small>
+    </p>
+    
+    <p>
+        <label for="cs_hero_subtitle"><strong><?php _e('Hero Subtitle:', 'new-horizon'); ?></strong></label><br>
+        <textarea id="cs_hero_subtitle" name="cs_hero_subtitle" rows="3" style="width: 100%;" placeholder="e.g., A fully custom residence designed for the way you live, entertain, and lead..."><?php echo esc_textarea($hero_subtitle); ?></textarea>
+    </p>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        var heroImageFrame;
+        $('.upload-hero-image-button').on('click', function(e) {
+            e.preventDefault();
+            if (heroImageFrame) {
+                heroImageFrame.open();
+                return;
+            }
+            heroImageFrame = wp.media({
+                title: 'Select Hero Image',
+                button: { text: 'Use this image' },
+                multiple: false
+            });
+            heroImageFrame.on('select', function() {
+                var attachment = heroImageFrame.state().get('selection').first().toJSON();
+                $('#cs_hero_image').val(attachment.id);
+                $('#hero-image-preview').html('<img src="' + attachment.url + '" style="max-width: 300px; height: auto; display: block; border: 1px solid #ddd;">');
+                $('.remove-hero-image-button').show();
+            });
+            heroImageFrame.open();
+        });
+        
+        $('.remove-hero-image-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_hero_image').val('');
+            $('#hero-image-preview').html('');
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Case Study Intro Quote Meta Box Callback
+ */
+function new_horizon_case_study_intro_callback($post) {
+    $intro_quote = get_post_meta($post->ID, '_cs_intro_quote', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;">
+        <em><?php _e('This quote appears centered below the hero, setting the tone for the entire case study.', 'new-horizon'); ?></em>
+    </p>
+    <p>
+        <label for="cs_intro_quote"><strong><?php _e('Opening Statement:', 'new-horizon'); ?></strong></label><br>
+        <textarea id="cs_intro_quote" name="cs_intro_quote" rows="4" style="width: 100%; font-family: Georgia, serif; font-size: 16px;" placeholder="e.g., Old Atlanta Estate was designed from the ground up for a client who wanted more than a home — they wanted a private world..."><?php echo esc_textarea($intro_quote); ?></textarea>
+        <small style="display: block; margin-top: 5px; color: #666;"><?php _e('Write in first person, as if speaking directly to the reader. This should feel editorial, not salesy.', 'new-horizon'); ?></small>
+    </p>
+    <?php
+}
+
+/**
+ * Save Case Study Meta Data
+ */
+function new_horizon_save_case_study_meta($post_id) {
+    if (!isset($_POST['new_horizon_case_study_nonce']) || 
+        !wp_verify_nonce($_POST['new_horizon_case_study_nonce'], 'new_horizon_save_case_study')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    // Save specs
+    $fields = array('cs_bedrooms', 'cs_bathrooms', 'cs_acres', 'cs_garage', 'cs_basement');
+    foreach ($fields as $field) {
+        if (isset($_POST[$field])) {
+            update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST[$field]));
+        }
+    }
+    
+    // Save hero section
+    if (isset($_POST['cs_hero_image'])) {
+        update_post_meta($post_id, '_cs_hero_image', absint($_POST['cs_hero_image']));
+    }
+    if (isset($_POST['cs_hero_eyebrow'])) {
+        update_post_meta($post_id, '_cs_hero_eyebrow', sanitize_text_field($_POST['cs_hero_eyebrow']));
+    }
+    if (isset($_POST['cs_hero_subtitle'])) {
+        update_post_meta($post_id, '_cs_hero_subtitle', sanitize_textarea_field($_POST['cs_hero_subtitle']));
+    }
+    
+    // Save intro quote
+    if (isset($_POST['cs_intro_quote'])) {
+        update_post_meta($post_id, '_cs_intro_quote', sanitize_textarea_field($_POST['cs_intro_quote']));
+    }
+    
+    // Save Section 03: Exterior images
+    if (isset($_POST['cs_ext_front'])) {
+        update_post_meta($post_id, '_cs_ext_front', absint($_POST['cs_ext_front']));
+    }
+    if (isset($_POST['cs_ext_rear'])) {
+        update_post_meta($post_id, '_cs_ext_rear', absint($_POST['cs_ext_rear']));
+    }
+    
+    // Save Section 04: Foyer
+    if (isset($_POST['cs_foyer_image'])) {
+        update_post_meta($post_id, '_cs_foyer_image', absint($_POST['cs_foyer_image']));
+    }
+    
+    // Save Section 05: Living & Dining
+    if (isset($_POST['cs_living_image'])) {
+        update_post_meta($post_id, '_cs_living_image', absint($_POST['cs_living_image']));
+    }
+    if (isset($_POST['cs_dining_image'])) {
+        update_post_meta($post_id, '_cs_dining_image', absint($_POST['cs_dining_image']));
+    }
+    
+    // Save Section 06: Kitchen
+    if (isset($_POST['cs_kitchen_main'])) {
+        update_post_meta($post_id, '_cs_kitchen_main', absint($_POST['cs_kitchen_main']));
+    }
+    if (isset($_POST['cs_kitchen_prep'])) {
+        update_post_meta($post_id, '_cs_kitchen_prep', absint($_POST['cs_kitchen_prep']));
+    }
+    
+    // Save Section 07: Primary Suite
+    if (isset($_POST['cs_primary_bed'])) {
+        update_post_meta($post_id, '_cs_primary_bed', absint($_POST['cs_primary_bed']));
+    }
+    if (isset($_POST['cs_primary_bath'])) {
+        update_post_meta($post_id, '_cs_primary_bath', absint($_POST['cs_primary_bath']));
+    }
+    if (isset($_POST['cs_primary_vanity'])) {
+        update_post_meta($post_id, '_cs_primary_vanity', absint($_POST['cs_primary_vanity']));
+    }
+    if (isset($_POST['cs_primary_closet'])) {
+        update_post_meta($post_id, '_cs_primary_closet', absint($_POST['cs_primary_closet']));
+    }
+    
+    // Save Section 08: Office & Powder
+    if (isset($_POST['cs_office_image'])) {
+        update_post_meta($post_id, '_cs_office_image', absint($_POST['cs_office_image']));
+    }
+    if (isset($_POST['cs_powder_image'])) {
+        update_post_meta($post_id, '_cs_powder_image', absint($_POST['cs_powder_image']));
+    }
+    
+    // Save Section 09: Floor Plans
+    if (isset($_POST['cs_fp_intro'])) {
+        update_post_meta($post_id, '_cs_fp_intro', wp_kses_post($_POST['cs_fp_intro']));
+    }
+    if (isset($_POST['cs_fp_main_rooms'])) {
+        update_post_meta($post_id, '_cs_fp_main_rooms', sanitize_textarea_field($_POST['cs_fp_main_rooms']));
+    }
+    if (isset($_POST['cs_fp_upper_rooms'])) {
+        update_post_meta($post_id, '_cs_fp_upper_rooms', sanitize_textarea_field($_POST['cs_fp_upper_rooms']));
+    }
+}
+add_action('save_post_project', 'new_horizon_save_case_study_meta');
+
+/**
+ * Section 03: Exterior Images Callback
+ */
+function new_horizon_case_study_exterior_callback($post) {
+    $ext_front = get_post_meta($post->ID, '_cs_ext_front', true);
+    $ext_rear = get_post_meta($post->ID, '_cs_ext_rear', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;"><em>Upload front and rear elevation images</em></p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <label><strong>Front Elevation:</strong></label><br>
+            <input type="hidden" id="cs_ext_front" name="cs_ext_front" value="<?php echo esc_attr($ext_front); ?>">
+            <button type="button" class="button upload-ext-front-button">Select Image</button>
+            <button type="button" class="button remove-ext-front-button" style="<?php echo $ext_front ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="ext-front-preview" style="margin-top: 10px;">
+                <?php if ($ext_front) : ?>
+                    <img src="<?php echo wp_get_attachment_url($ext_front); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+        <div>
+            <label><strong>Rear Elevation:</strong></label><br>
+            <input type="hidden" id="cs_ext_rear" name="cs_ext_rear" value="<?php echo esc_attr($ext_rear); ?>">
+            <button type="button" class="button upload-ext-rear-button">Select Image</button>
+            <button type="button" class="button remove-ext-rear-button" style="<?php echo $ext_rear ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="ext-rear-preview" style="margin-top: 10px;">
+                <?php if ($ext_rear) : ?>
+                    <img src="<?php echo wp_get_attachment_url($ext_rear); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <script>
+    jQuery(document).ready(function($) {
+        // Front image
+        var frontFrame;
+        $('.upload-ext-front-button').on('click', function(e) {
+            e.preventDefault();
+            if (frontFrame) { frontFrame.open(); return; }
+            frontFrame = wp.media({ title: 'Select Front Elevation', button: { text: 'Use this image' }, multiple: false });
+            frontFrame.on('select', function() {
+                var attachment = frontFrame.state().get('selection').first().toJSON();
+                $('#cs_ext_front').val(attachment.id);
+                $('#ext-front-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-ext-front-button').show();
+            });
+            frontFrame.open();
+        });
+        $('.remove-ext-front-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_ext_front').val('');
+            $('#ext-front-preview').html('');
+            $(this).hide();
+        });
+        
+        // Rear image
+        var rearFrame;
+        $('.upload-ext-rear-button').on('click', function(e) {
+            e.preventDefault();
+            if (rearFrame) { rearFrame.open(); return; }
+            rearFrame = wp.media({ title: 'Select Rear Elevation', button: { text: 'Use this image' }, multiple: false });
+            rearFrame.on('select', function() {
+                var attachment = rearFrame.state().get('selection').first().toJSON();
+                $('#cs_ext_rear').val(attachment.id);
+                $('#ext-rear-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-ext-rear-button').show();
+            });
+            rearFrame.open();
+        });
+        $('.remove-ext-rear-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_ext_rear').val('');
+            $('#ext-rear-preview').html('');
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Section 04: Foyer Callback
+ */
+function new_horizon_case_study_foyer_callback($post) {
+    $foyer_image = get_post_meta($post->ID, '_cs_foyer_image', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;"><em>Upload the showstopper foyer image</em></p>
+    <input type="hidden" id="cs_foyer_image" name="cs_foyer_image" value="<?php echo esc_attr($foyer_image); ?>">
+    <button type="button" class="button upload-foyer-button">Select Foyer Image</button>
+    <button type="button" class="button remove-foyer-button" style="<?php echo $foyer_image ? '' : 'display:none;'; ?>">Remove</button>
+    <div id="foyer-preview" style="margin-top: 10px;">
+        <?php if ($foyer_image) : ?>
+            <img src="<?php echo wp_get_attachment_url($foyer_image); ?>" style="max-width: 100%; height: auto;">
+        <?php endif; ?>
+    </div>
+    <script>
+    jQuery(document).ready(function($) {
+        var foyerFrame;
+        $('.upload-foyer-button').on('click', function(e) {
+            e.preventDefault();
+            if (foyerFrame) { foyerFrame.open(); return; }
+            foyerFrame = wp.media({ title: 'Select Foyer Image', button: { text: 'Use this image' }, multiple: false });
+            foyerFrame.on('select', function() {
+                var attachment = foyerFrame.state().get('selection').first().toJSON();
+                $('#cs_foyer_image').val(attachment.id);
+                $('#foyer-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-foyer-button').show();
+            });
+            foyerFrame.open();
+        });
+        $('.remove-foyer-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_foyer_image').val('');
+            $('#foyer-preview').html('');
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Section 05: Living & Dining Callback
+ */
+function new_horizon_case_study_living_callback($post) {
+    $living_image = get_post_meta($post->ID, '_cs_living_image', true);
+    $dining_image = get_post_meta($post->ID, '_cs_dining_image', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;"><em>Upload living room and dining room images</em></p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <label><strong>Living Room:</strong></label><br>
+            <input type="hidden" id="cs_living_image" name="cs_living_image" value="<?php echo esc_attr($living_image); ?>">
+            <button type="button" class="button upload-living-button">Select Image</button>
+            <button type="button" class="button remove-living-button" style="<?php echo $living_image ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="living-preview" style="margin-top: 10px;">
+                <?php if ($living_image) : ?>
+                    <img src="<?php echo wp_get_attachment_url($living_image); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+        <div>
+            <label><strong>Dining Room:</strong></label><br>
+            <input type="hidden" id="cs_dining_image" name="cs_dining_image" value="<?php echo esc_attr($dining_image); ?>">
+            <button type="button" class="button upload-dining-button">Select Image</button>
+            <button type="button" class="button remove-dining-button" style="<?php echo $dining_image ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="dining-preview" style="margin-top: 10px;">
+                <?php if ($dining_image) : ?>
+                    <img src="<?php echo wp_get_attachment_url($dining_image); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <script>
+    jQuery(document).ready(function($) {
+        // Living
+        var livingFrame;
+        $('.upload-living-button').on('click', function(e) {
+            e.preventDefault();
+            if (livingFrame) { livingFrame.open(); return; }
+            livingFrame = wp.media({ title: 'Select Living Room', button: { text: 'Use this image' }, multiple: false });
+            livingFrame.on('select', function() {
+                var attachment = livingFrame.state().get('selection').first().toJSON();
+                $('#cs_living_image').val(attachment.id);
+                $('#living-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-living-button').show();
+            });
+            livingFrame.open();
+        });
+        $('.remove-living-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_living_image').val('');
+            $('#living-preview').html('');
+            $(this).hide();
+        });
+        
+        // Dining
+        var diningFrame;
+        $('.upload-dining-button').on('click', function(e) {
+            e.preventDefault();
+            if (diningFrame) { diningFrame.open(); return; }
+            diningFrame = wp.media({ title: 'Select Dining Room', button: { text: 'Use this image' }, multiple: false });
+            diningFrame.on('select', function() {
+                var attachment = diningFrame.state().get('selection').first().toJSON();
+                $('#cs_dining_image').val(attachment.id);
+                $('#dining-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-dining-button').show();
+            });
+            diningFrame.open();
+        });
+        $('.remove-dining-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_dining_image').val('');
+            $('#dining-preview').html('');
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Section 06: Kitchen Callback
+ */
+function new_horizon_case_study_kitchen_callback($post) {
+    $kitchen_main = get_post_meta($post->ID, '_cs_kitchen_main', true);
+    $kitchen_prep = get_post_meta($post->ID, '_cs_kitchen_prep', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;"><em>Upload main kitchen and prep kitchen images</em></p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <label><strong>Main Kitchen:</strong></label><br>
+            <input type="hidden" id="cs_kitchen_main" name="cs_kitchen_main" value="<?php echo esc_attr($kitchen_main); ?>">
+            <button type="button" class="button upload-kitchen-main-button">Select Image</button>
+            <button type="button" class="button remove-kitchen-main-button" style="<?php echo $kitchen_main ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="kitchen-main-preview" style="margin-top: 10px;">
+                <?php if ($kitchen_main) : ?>
+                    <img src="<?php echo wp_get_attachment_url($kitchen_main); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+        <div>
+            <label><strong>Prep Kitchen:</strong></label><br>
+            <input type="hidden" id="cs_kitchen_prep" name="cs_kitchen_prep" value="<?php echo esc_attr($kitchen_prep); ?>">
+            <button type="button" class="button upload-kitchen-prep-button">Select Image</button>
+            <button type="button" class="button remove-kitchen-prep-button" style="<?php echo $kitchen_prep ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="kitchen-prep-preview" style="margin-top: 10px;">
+                <?php if ($kitchen_prep) : ?>
+                    <img src="<?php echo wp_get_attachment_url($kitchen_prep); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <script>
+    jQuery(document).ready(function($) {
+        // Main Kitchen
+        var kitchenMainFrame;
+        $('.upload-kitchen-main-button').on('click', function(e) {
+            e.preventDefault();
+            if (kitchenMainFrame) { kitchenMainFrame.open(); return; }
+            kitchenMainFrame = wp.media({ title: 'Select Main Kitchen', button: { text: 'Use this image' }, multiple: false });
+            kitchenMainFrame.on('select', function() {
+                var attachment = kitchenMainFrame.state().get('selection').first().toJSON();
+                $('#cs_kitchen_main').val(attachment.id);
+                $('#kitchen-main-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-kitchen-main-button').show();
+            });
+            kitchenMainFrame.open();
+        });
+        $('.remove-kitchen-main-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_kitchen_main').val('');
+            $('#kitchen-main-preview').html('');
+            $(this).hide();
+        });
+        
+        // Prep Kitchen
+        var kitchenPrepFrame;
+        $('.upload-kitchen-prep-button').on('click', function(e) {
+            e.preventDefault();
+            if (kitchenPrepFrame) { kitchenPrepFrame.open(); return; }
+            kitchenPrepFrame = wp.media({ title: 'Select Prep Kitchen', button: { text: 'Use this image' }, multiple: false });
+            kitchenPrepFrame.on('select', function() {
+                var attachment = kitchenPrepFrame.state().get('selection').first().toJSON();
+                $('#cs_kitchen_prep').val(attachment.id);
+                $('#kitchen-prep-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-kitchen-prep-button').show();
+            });
+            kitchenPrepFrame.open();
+        });
+        $('.remove-kitchen-prep-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_kitchen_prep').val('');
+            $('#kitchen-prep-preview').html('');
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Section 07: Primary Suite Callback
+ */
+function new_horizon_case_study_primary_callback($post) {
+    $primary_bed = get_post_meta($post->ID, '_cs_primary_bed', true);
+    $primary_bath = get_post_meta($post->ID, '_cs_primary_bath', true);
+    $primary_vanity = get_post_meta($post->ID, '_cs_primary_vanity', true);
+    $primary_closet = get_post_meta($post->ID, '_cs_primary_closet', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;"><em>Upload 4 images for the primary suite (2x2 grid)</em></p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <?php
+        $suite_images = array(
+            'bed' => array('label' => 'Bedroom', 'id' => $primary_bed),
+            'bath' => array('label' => 'Bathroom', 'id' => $primary_bath),
+            'vanity' => array('label' => 'Vanity', 'id' => $primary_vanity),
+            'closet' => array('label' => 'Closet', 'id' => $primary_closet)
+        );
+        
+        foreach ($suite_images as $key => $data) :
+        ?>
+            <div>
+                <label><strong><?php echo $data['label']; ?>:</strong></label><br>
+                <input type="hidden" id="cs_primary_<?php echo $key; ?>" name="cs_primary_<?php echo $key; ?>" value="<?php echo esc_attr($data['id']); ?>">
+                <button type="button" class="button upload-primary-<?php echo $key; ?>-button">Select</button>
+                <button type="button" class="button remove-primary-<?php echo $key; ?>-button" style="<?php echo $data['id'] ? '' : 'display:none;'; ?>">Remove</button>
+                <div id="primary-<?php echo $key; ?>-preview" style="margin-top: 10px;">
+                    <?php if ($data['id']) : ?>
+                        <img src="<?php echo wp_get_attachment_url($data['id']); ?>" style="max-width: 100%; height: auto;">
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <script>
+    jQuery(document).ready(function($) {
+        <?php foreach (array_keys($suite_images) as $key) : ?>
+        var primary<?php echo ucfirst($key); ?>Frame;
+        $('.upload-primary-<?php echo $key; ?>-button').on('click', function(e) {
+            e.preventDefault();
+            if (primary<?php echo ucfirst($key); ?>Frame) { primary<?php echo ucfirst($key); ?>Frame.open(); return; }
+            primary<?php echo ucfirst($key); ?>Frame = wp.media({ title: 'Select Image', button: { text: 'Use this image' }, multiple: false });
+            primary<?php echo ucfirst($key); ?>Frame.on('select', function() {
+                var attachment = primary<?php echo ucfirst($key); ?>Frame.state().get('selection').first().toJSON();
+                $('#cs_primary_<?php echo $key; ?>').val(attachment.id);
+                $('#primary-<?php echo $key; ?>-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-primary-<?php echo $key; ?>-button').show();
+            });
+            primary<?php echo ucfirst($key); ?>Frame.open();
+        });
+        $('.remove-primary-<?php echo $key; ?>-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_primary_<?php echo $key; ?>').val('');
+            $('#primary-<?php echo $key; ?>-preview').html('');
+            $(this).hide();
+        });
+        <?php endforeach; ?>
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Section 08: Office & Powder Callback
+ */
+function new_horizon_case_study_office_callback($post) {
+    $office_image = get_post_meta($post->ID, '_cs_office_image', true);
+    $powder_image = get_post_meta($post->ID, '_cs_powder_image', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;"><em>Upload office and powder room images</em></p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <label><strong>Home Office:</strong></label><br>
+            <input type="hidden" id="cs_office_image" name="cs_office_image" value="<?php echo esc_attr($office_image); ?>">
+            <button type="button" class="button upload-office-button">Select Image</button>
+            <button type="button" class="button remove-office-button" style="<?php echo $office_image ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="office-preview" style="margin-top: 10px;">
+                <?php if ($office_image) : ?>
+                    <img src="<?php echo wp_get_attachment_url($office_image); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+        <div>
+            <label><strong>Powder Room:</strong></label><br>
+            <input type="hidden" id="cs_powder_image" name="cs_powder_image" value="<?php echo esc_attr($powder_image); ?>">
+            <button type="button" class="button upload-powder-button">Select Image</button>
+            <button type="button" class="button remove-powder-button" style="<?php echo $powder_image ? '' : 'display:none;'; ?>">Remove</button>
+            <div id="powder-preview" style="margin-top: 10px;">
+                <?php if ($powder_image) : ?>
+                    <img src="<?php echo wp_get_attachment_url($powder_image); ?>" style="max-width: 100%; height: auto;">
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <script>
+    jQuery(document).ready(function($) {
+        // Office
+        var officeFrame;
+        $('.upload-office-button').on('click', function(e) {
+            e.preventDefault();
+            if (officeFrame) { officeFrame.open(); return; }
+            officeFrame = wp.media({ title: 'Select Office Image', button: { text: 'Use this image' }, multiple: false });
+            officeFrame.on('select', function() {
+                var attachment = officeFrame.state().get('selection').first().toJSON();
+                $('#cs_office_image').val(attachment.id);
+                $('#office-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-office-button').show();
+            });
+            officeFrame.open();
+        });
+        $('.remove-office-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_office_image').val('');
+            $('#office-preview').html('');
+            $(this).hide();
+        });
+        
+        // Powder
+        var powderFrame;
+        $('.upload-powder-button').on('click', function(e) {
+            e.preventDefault();
+            if (powderFrame) { powderFrame.open(); return; }
+            powderFrame = wp.media({ title: 'Select Powder Room', button: { text: 'Use this image' }, multiple: false });
+            powderFrame.on('select', function() {
+                var attachment = powderFrame.state().get('selection').first().toJSON();
+                $('#cs_powder_image').val(attachment.id);
+                $('#powder-preview').html('<img src="' + attachment.url + '" style="max-width: 100%; height: auto;">');
+                $('.remove-powder-button').show();
+            });
+            powderFrame.open();
+        });
+        $('.remove-powder-button').on('click', function(e) {
+            e.preventDefault();
+            $('#cs_powder_image').val('');
+            $('#powder-preview').html('');
+            $(this).hide();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Section 09: Floor Plans Callback
+ */
+function new_horizon_case_study_floorplans_callback($post) {
+    $fp_intro = get_post_meta($post->ID, '_cs_fp_intro', true);
+    $fp_main_rooms = get_post_meta($post->ID, '_cs_fp_main_rooms', true);
+    $fp_upper_rooms = get_post_meta($post->ID, '_cs_fp_upper_rooms', true);
+    ?>
+    <p style="margin-bottom: 15px; color: #666;"><em>Customize the floor plan section content</em></p>
+    
+    <div style="margin-bottom: 20px;">
+        <label><strong>Intro Copy:</strong></label><br>
+        <textarea name="cs_fp_intro" rows="3" style="width: 100%;"><?php echo esc_textarea($fp_intro); ?></textarea>
+        <p style="font-size: 12px; color: #666; margin-top: 5px;">This appears above or beside the floor plans</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <label><strong>Main Level Rooms:</strong></label><br>
+            <textarea name="cs_fp_main_rooms" rows="12" style="width: 100%; font-family: monospace; font-size: 12px;"><?php echo esc_textarea($fp_main_rooms); ?></textarea>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">One room per line. Format: <code>Room Name — Description</code></p>
+        </div>
+        <div>
+            <label><strong>Upper Level Rooms:</strong></label><br>
+            <textarea name="cs_fp_upper_rooms" rows="12" style="width: 100%; font-family: monospace; font-size: 12px;"><?php echo esc_textarea($fp_upper_rooms); ?></textarea>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">One room per line. Format: <code>Room Name — Description</code></p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 15px; padding: 15px; background: #f0f0f0; border-left: 3px solid #B8952A;">
+        <strong>Example format:</strong><br>
+        <code>Foyer — Grand dual staircase entry</code><br>
+        <code>Living Room — Open great room</code><br>
+        <code>Kitchen — Chef's kitchen</code>
+    </div>
+    <?php
+}
