@@ -200,7 +200,7 @@ wp_enqueue_script('lightbox-js', 'https://cdnjs.cloudflare.com/ajax/libs/lightbo
                             <i class="fas fa-headset"></i>
                         </div>
                         <h3><?php esc_html_e('Interested in a Similar Project?', 'new-horizon'); ?></h3>
-                        <p><?php esc_html_e('Let\'s discuss your vision and bring it to life.', 'new-horizon'); ?></p>
+                        <p><?php esc_html_e('Every home we build starts with a conversation. Tell us your vision and we\'ll show you what\'s possible.', 'new-horizon'); ?></p>
                         <?php
                         $phone = get_theme_mod('new_horizon_phone', '+1 (555) 123-4567');
                         $whatsapp = get_theme_mod('new_horizon_whatsapp', '15551234567');
@@ -209,7 +209,7 @@ wp_enqueue_script('lightbox-js', 'https://cdnjs.cloudflare.com/ajax/libs/lightbo
                             <i class="fab fa-whatsapp"></i> <?php esc_html_e('WhatsApp Us', 'new-horizon'); ?>
                         </a>
                         <a href="<?php echo esc_url(home_url('/#contact')); ?>" class="btn btn-outline btn-block">
-                            <i class="fas fa-envelope"></i> <?php esc_html_e('Get a Quote', 'new-horizon'); ?>
+                            <i class="fas fa-envelope"></i> <?php esc_html_e('BEGIN YOUR PROJECT →', 'new-horizon'); ?>
                         </a>
                     </div>
                 </div>
