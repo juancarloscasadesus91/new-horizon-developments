@@ -88,11 +88,6 @@ while (have_posts()) : the_post();
         </div>
     </div>
     
-    <!-- Scroll Indicator - Animated Gold Arrow Only (Left Side) -->
-    <div class="scroll-indicator" style="position: absolute; bottom: 2.5rem; left: 3rem; text-align: center; z-index: 2; display: flex; flex-direction: column; align-items: center;">
-        <div style="width: 1px; height: 50px; background: linear-gradient(to bottom, transparent, #D4AF37); margin-bottom: 0.75rem;"></div>
-        <i class="fas fa-chevron-down" style="color: #D4AF37; font-size: 16px; animation: bounce 2s infinite;"></i>
-    </div>
 </section>
 
 <!-- SECTION 02: Intro Statement -->
@@ -144,7 +139,7 @@ while (have_posts()) : the_post();
             <!-- Front Elevation -->
             <div class="cs-image-block">
                 <?php if ($ext_front) : ?>
-                <div class="cs-image-wrapper">
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
                     <img src="<?php echo wp_get_attachment_url($ext_front); ?>" alt="Front Elevation">
                 </div>
                 <?php endif; ?>
@@ -157,7 +152,7 @@ while (have_posts()) : the_post();
             <!-- Rear Elevation -->
             <div class="cs-image-block">
                 <?php if ($ext_rear) : ?>
-                <div class="cs-image-wrapper">
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
                     <img src="<?php echo wp_get_attachment_url($ext_rear); ?>" alt="Rear Elevation">
                 </div>
                 <?php endif; ?>
@@ -212,17 +207,23 @@ while (have_posts()) : the_post();
         
         <div class="cs-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             <!-- Living Room -->
-            <?php if ($living_image) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($living_image); ?>" alt="Living Room">
-            <?php endif; ?>
+            <div>
+                <?php if ($living_image) : ?>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($living_image); ?>" alt="Living Room">
+                </div>
+                <?php endif; ?>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Living Room</h3>
             </div>
             
             <!-- Dining Room -->
-            <?php if ($dining_image) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($dining_image); ?>" alt="Dining Room">
-            <?php endif; ?>
+            <div>
+                <?php if ($dining_image) : ?>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($dining_image); ?>" alt="Dining Room">
+                </div>
+                <?php endif; ?>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Dining Room</h3>
             </div>
         </div>
     </div>
@@ -239,20 +240,20 @@ while (have_posts()) : the_post();
             <!-- Main Kitchen -->
             <div class="cs-image-block">
                 <?php if ($kitchen_main) : ?>
-                <div class="cs-image-wrapper">
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
                     <img src="<?php echo wp_get_attachment_url($kitchen_main); ?>" alt="Main Kitchen">
-                <?php endif; ?>
                 </div>
+                <?php endif; ?>
                 <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Main Kitchen</h3>
             </div>
             
             <!-- Prep Kitchen -->
             <div class="cs-image-block">
                 <?php if ($kitchen_prep) : ?>
-                <div class="cs-image-wrapper">
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
                     <img src="<?php echo wp_get_attachment_url($kitchen_prep); ?>" alt="Prep Kitchen">
-                <?php endif; ?>
                 </div>
+                <?php endif; ?>
                 <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Prep Kitchen & Butler's Pantry</h3>
             </div>
         </div>
@@ -278,23 +279,35 @@ while (have_posts()) : the_post();
         <!-- 2x2 Grid -->
         <div class="cs-grid-2x2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
             <?php if ($primary_bed) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($primary_bed); ?>" alt="Primary Bedroom">
+            <div>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($primary_bed); ?>" alt="Primary Bedroom">
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Primary Bedroom</h3>
             </div>
             <?php endif; ?>
             <?php if ($primary_bath) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($primary_bath); ?>" alt="Primary Bath">
+            <div>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($primary_bath); ?>" alt="Primary Bath">
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Primary Bath — Spa Suite</h3>
             </div>
             <?php endif; ?>
             <?php if ($primary_vanity) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($primary_vanity); ?>" alt="Vanity">
+            <div>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($primary_vanity); ?>" alt="Vanity">
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Primary Bath — Vanity</h3>
             </div>
             <?php endif; ?>
             <?php if ($primary_closet) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($primary_closet); ?>" alt="Walk-in Closet">
+            <div>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($primary_closet); ?>" alt="Walk-in Closet">
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">His Walk-In Closet</h3>
             </div>
             <?php endif; ?>
         </div>
@@ -316,17 +329,23 @@ while (have_posts()) : the_post();
         
         <div class="cs-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             <!-- Office -->
-            <?php if ($office_image) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($office_image); ?>" alt="Home Office">
-            <?php endif; ?>
+            <div>
+                <?php if ($office_image) : ?>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($office_image); ?>" alt="Home Office">
+                </div>
+                <?php endif; ?>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Executive Home Office</h3>
             </div>
             
             <!-- Powder Room -->
-            <?php if ($powder_image) : ?>
-            <div class="cs-image-wrapper">
-                <img src="<?php echo wp_get_attachment_url($powder_image); ?>" alt="Powder Room">
-            <?php endif; ?>
+            <div>
+                <?php if ($powder_image) : ?>
+                <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
+                    <img src="<?php echo wp_get_attachment_url($powder_image); ?>" alt="Powder Room">
+                </div>
+                <?php endif; ?>
+                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Powder Room</h3>
             </div>
         </div>
     </div>
@@ -474,6 +493,40 @@ $upper_rooms = array_filter(explode("\n", $fp_upper_rooms));
     </div>
 </div>
 
+<!-- Scroll Buttons -->
+<style>
+@keyframes bounceUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+@keyframes bounceDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+}
+.scroll-btn-up:hover { animation: bounceUp 0.6s ease-in-out infinite; }
+.scroll-btn-down:hover { animation: bounceDown 0.6s ease-in-out infinite; }
+</style>
+
+<div id="scrollButtons" style="position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 1000;">
+    <!-- Scroll Up Button -->
+    <button id="scrollUpBtn" class="scroll-btn-up" style="background: none; border: none; cursor: pointer; display: none; padding: 0; transition: opacity 0.3s ease;">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <!-- Double Chevron Up -->
+            <path d="M24 20L16 12L8 20" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24 26L16 18L8 26" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+    
+    <!-- Scroll Down Button -->
+    <button id="scrollDownBtn" class="scroll-btn-down" style="background: none; border: none; cursor: pointer; display: none; padding: 0; transition: opacity 0.3s ease;">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <!-- Double Chevron Down -->
+            <path d="M8 12L16 20L24 12" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 6L16 14L24 6" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+</div>
+
 <script>
 jQuery(document).ready(function($) {
     // Collect all gallery images
@@ -540,6 +593,77 @@ jQuery(document).ready(function($) {
             if (e.key === 'ArrowLeft') showPrevImage();
         }
     });
+    
+    // ===== SCROLL BUTTONS =====
+    var $scrollUpBtn = $('#scrollUpBtn');
+    var $scrollDownBtn = $('#scrollDownBtn');
+    var sections = [];
+    
+    // Collect all sections
+    $('.cs-section').each(function() {
+        sections.push($(this).offset().top - 100);
+    });
+    
+    // Show/hide buttons based on scroll position
+    $(window).on('scroll', function() {
+        var scrollTop = $(window).scrollTop();
+        var windowHeight = $(window).height();
+        var documentHeight = $(document).height();
+        
+        // Show UP button after scrolling 300px
+        if (scrollTop > 300) {
+            $scrollUpBtn.fadeIn();
+        } else {
+            $scrollUpBtn.fadeOut();
+        }
+        
+        // Show DOWN button if not at bottom
+        if (scrollTop + windowHeight < documentHeight - 100) {
+            $scrollDownBtn.fadeIn();
+        } else {
+            $scrollDownBtn.fadeOut();
+        }
+    });
+    
+    // Scroll UP button - goes to top
+    $scrollUpBtn.on('click', function() {
+        $('html, body').animate({
+            scrollTop: 0
+        }, 800, 'swing');
+    });
+    
+    // Scroll DOWN button - goes to next section or down by viewport
+    $scrollDownBtn.on('click', function() {
+        var currentScroll = $(window).scrollTop();
+        var nextSection = null;
+        
+        // Find next section
+        for (var i = 0; i < sections.length; i++) {
+            if (sections[i] > currentScroll + 50) {
+                nextSection = sections[i];
+                break;
+            }
+        }
+        
+        // If no next section found, scroll down by viewport height
+        if (nextSection === null) {
+            nextSection = currentScroll + $(window).height() * 0.8;
+        }
+        
+        $('html, body').animate({
+            scrollTop: nextSection
+        }, 600, 'swing');
+    });
+    
+    // Hover effects - change opacity
+    $('#scrollUpBtn, #scrollDownBtn').hover(
+        function() {
+            $(this).css('opacity', '1');
+        },
+        function() {
+            $(this).css('opacity', '0.8');
+        }
+    );
 });
 </script>
 
