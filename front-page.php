@@ -173,7 +173,7 @@ get_header();
             <?php
             $testimonials = array(
                 array(
-                    'content' => __('Working with Timber Homes was an absolute dream. From the initial design consultation to the final walkthrough, their team was professional, responsive, and incredibly skilled. Our mountain retreat is everything we hoped for and more. The craftsmanship is outstanding!', 'timber-homes'),
+                    'content' => __('Building our home with New Horizon Developments was one of the best decisions we\'ve made. The entire process was smooth, transparent, and the craftsmanship exceeded every expectation. We couldn\'t be happier with the result.', 'timber-homes'),
                     'name'    => 'Marcus & Danielle T.',
                     'location' => 'Johns Creek, GA',
                 ),
@@ -183,7 +183,7 @@ get_header();
                     'location' => 'Atlanta, GA',
                 ),
                 array(
-                    'content' => __('We"ve worked with other builders before, but nothing compares to the attention to detail and personal service we received from New Horizon. They treated our home like it was their own.', 'timber-homes'),
+                    'content' => __('We\'ve worked with other builders before, but nothing compares to the attention to detail and personal service we received from New Horizon. They treated our home like it was their own.', 'timber-homes'),
                     'name'    => 'Chris & Lauren M.',
                     'location' => 'Buford, GA',
                 ),
