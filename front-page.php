@@ -111,7 +111,7 @@ get_header();
         <div class="section-title">
             <p class="section-subtitle"><?php esc_html_e('Our Work', 'timber-homes'); ?></p>
             <h2><?php esc_html_e('Featured Projects', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Explore our portfolio of stunning timber homes', 'timber-homes'); ?></p>
+            <p><?php esc_html_e('Explore our portfolio of stunning', 'timber-homes'); ?></p>
         </div>
 
         <div class="portfolio-grid">
