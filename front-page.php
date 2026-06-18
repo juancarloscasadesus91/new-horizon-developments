@@ -105,6 +105,19 @@ get_header();
     </div>
 </section>
 
+<!-- Services CTA Section -->
+<section class="about-cta-section section">
+    <div class="container">
+        <div class="cta-content">
+            <h2><?php esc_html_e('Ready to Start Your Project?', 'timber-homes'); ?></h2>
+            <p><?php esc_html_e('Let\'s turn your vision into reality. Our team is ready to guide you through every step of the construction process.', 'timber-homes'); ?></p>
+            <div class="cta-buttons">
+                <a href="#contact" class="btn btn-primary"><?php esc_html_e('Request a Quote', 'timber-homes'); ?></a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Portfolio Section -->
 <section class="portfolio-section section" id="portfolio">
     <div class="container">
