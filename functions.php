@@ -1461,6 +1461,91 @@ function new_horizon_customize_register($wp_customize) {
 add_action('customize_register', 'new_horizon_customize_register');
 
 /**
+ * Homepage Stats & Price Anchoring Customizer
+ */
+function new_horizon_homepage_customizer($wp_customize) {
+    $wp_customize->add_section('new_horizon_homepage_stats', array(
+        'title'    => __('Homepage Stats & Pricing', 'new-horizon'),
+        'priority' => 32,
+    ));
+
+    // Price Anchoring Copy
+    $wp_customize->add_setting('new_horizon_price_anchor', array(
+        'default'           => 'Custom residences from the $900s',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('new_horizon_price_anchor', array(
+        'label'       => __('Price Anchoring Copy', 'new-horizon'),
+        'description' => __('Displayed below the hero buttons. Leave empty to hide.', 'new-horizon'),
+        'section'     => 'new_horizon_homepage_stats',
+        'type'        => 'text',
+    ));
+
+    // Stat 1
+    $wp_customize->add_setting('new_horizon_stat1_number', array(
+        'default'           => '50+',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('new_horizon_stat1_number', array(
+        'label'   => __('Stat 1 — Number', 'new-horizon'),
+        'section' => 'new_horizon_homepage_stats',
+        'type'    => 'text',
+    ));
+    $wp_customize->add_setting('new_horizon_stat1_label', array(
+        'default'           => 'Homes Completed',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('new_horizon_stat1_label', array(
+        'label'   => __('Stat 1 — Label', 'new-horizon'),
+        'section' => 'new_horizon_homepage_stats',
+        'type'    => 'text',
+    ));
+
+    // Stat 2
+    $wp_customize->add_setting('new_horizon_stat2_number', array(
+        'default'           => '10+',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('new_horizon_stat2_number', array(
+        'label'   => __('Stat 2 — Number', 'new-horizon'),
+        'section' => 'new_horizon_homepage_stats',
+        'type'    => 'text',
+    ));
+    $wp_customize->add_setting('new_horizon_stat2_label', array(
+        'default'           => 'Years in Business',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('new_horizon_stat2_label', array(
+        'label'   => __('Stat 2 — Label', 'new-horizon'),
+        'section' => 'new_horizon_homepage_stats',
+        'type'    => 'text',
+    ));
+
+    // Stat 3 (Service Area)
+    $wp_customize->add_setting('new_horizon_stat3_label', array(
+        'default'           => 'Georgia & Southeast',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('new_horizon_stat3_label', array(
+        'label'       => __('Stat 3 — Service Area Label', 'new-horizon'),
+        'section'     => 'new_horizon_homepage_stats',
+        'type'        => 'text',
+    ));
+
+    // Stat 4 (Trust badge)
+    $wp_customize->add_setting('new_horizon_stat4_label', array(
+        'default'           => 'Licensed & Insured',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control('new_horizon_stat4_label', array(
+        'label'       => __('Stat 4 — Trust Badge Label', 'new-horizon'),
+        'section'     => 'new_horizon_homepage_stats',
+        'type'        => 'text',
+    ));
+}
+add_action('customize_register', 'new_horizon_homepage_customizer');
+
+/**
  * Custom Post Type: Services
  */
 function new_horizon_register_services_post_type() {

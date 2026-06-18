@@ -43,6 +43,44 @@ get_header();
                 <a href="#contact" class="btn btn-primary"><?php esc_html_e('Request a Quote', 'timber-homes'); ?></a>
                 <a href="#portfolio" class="btn btn-outline"><?php esc_html_e('View Our Projects', 'timber-homes'); ?></a>
             </div>
+            <?php $price_anchor = get_theme_mod('new_horizon_price_anchor', 'Custom residences from the $900s'); if ($price_anchor) : ?>
+            <p class="hero-price-anchor"><?php echo esc_html($price_anchor); ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Credibility Bar -->
+<section class="credibility-bar">
+    <div class="container">
+        <div class="credibility-stats">
+            <?php
+            $stat1_num   = get_theme_mod('new_horizon_stat1_number', '50+');
+            $stat1_label = get_theme_mod('new_horizon_stat1_label', 'Homes Completed');
+            $stat2_num   = get_theme_mod('new_horizon_stat2_number', '10+');
+            $stat2_label = get_theme_mod('new_horizon_stat2_label', 'Years in Business');
+            $stat3_label = get_theme_mod('new_horizon_stat3_label', 'Georgia & Southeast');
+            $stat4_label = get_theme_mod('new_horizon_stat4_label', 'Licensed & Insured');
+            ?>
+            <div class="credibility-item">
+                <span class="credibility-number"><?php echo esc_html($stat1_num); ?></span>
+                <span class="credibility-label"><?php echo esc_html($stat1_label); ?></span>
+            </div>
+            <div class="credibility-divider"></div>
+            <div class="credibility-item">
+                <span class="credibility-number"><?php echo esc_html($stat2_num); ?></span>
+                <span class="credibility-label"><?php echo esc_html($stat2_label); ?></span>
+            </div>
+            <div class="credibility-divider"></div>
+            <div class="credibility-item">
+                <span class="credibility-number"><i class="fas fa-map-marker-alt"></i></span>
+                <span class="credibility-label"><?php echo esc_html($stat3_label); ?></span>
+            </div>
+            <div class="credibility-divider"></div>
+            <div class="credibility-item">
+                <span class="credibility-number"><i class="fas fa-shield-alt"></i></span>
+                <span class="credibility-label"><?php echo esc_html($stat4_label); ?></span>
+            </div>
         </div>
     </div>
 </section>

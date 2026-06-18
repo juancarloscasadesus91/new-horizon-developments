@@ -2738,6 +2738,82 @@ select:focus {
     object-fit: cover;
 }
 
+/* ========================================
+   HERO PRICE ANCHOR
+======================================== */
+.hero-price-anchor {
+    margin-top: var(--spacing-md);
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.05em;
+    font-style: italic;
+}
+
+/* ========================================
+   CREDIBILITY BAR
+======================================== */
+.credibility-bar {
+    background: var(--color-gray-dark);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: var(--spacing-lg) 0;
+}
+
+.credibility-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.credibility-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+}
+
+.credibility-number {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--color-white);
+    line-height: 1;
+}
+
+.credibility-number i {
+    font-size: 1.6rem;
+    color: var(--color-gold);
+}
+
+.credibility-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.credibility-divider {
+    width: 1px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 768px) {
+    .credibility-stats {
+        gap: var(--spacing-lg);
+    }
+    .credibility-divider {
+        display: none;
+    }
+    .credibility-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 /* Foyer Large Image - exception */
 .cs-foyer .cs-image-wrapper {
     height: 60vh;
