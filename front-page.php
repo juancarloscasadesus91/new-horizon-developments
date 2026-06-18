@@ -53,7 +53,7 @@ get_header();
         <div class="section-title">
             <p class="section-subtitle"><?php esc_html_e('Our Process', 'timber-homes'); ?></p>
             <h2><?php esc_html_e('Our Construction Services', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Comprehensive timber home solutions from design to completion', 'timber-homes'); ?></p>
+            <p><?php esc_html_e('Comprehensive home construction solutions from design to completion', 'timber-homes'); ?></p>
         </div>
 
         <div class="grid grid-3">
