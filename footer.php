@@ -12,8 +12,8 @@
             <div class="footer-content">
                 <!-- About Section -->
                 <div class="footer-section">
-                    <h3><?php echo esc_html(get_theme_mod('footer_about_title', get_bloginfo('name'))); ?></h3>
-                    <p><?php echo esc_html(get_theme_mod('footer_about_text', 'Building premium American-style timber homes since 1995. We combine traditional craftsmanship with modern techniques to create sustainable, beautiful homes that last for generations.')); ?></p>
+                    <h3<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_about_title'); ?>><?php echo esc_html(get_theme_mod('footer_about_title', get_bloginfo('name'))); ?></h3>
+                    <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_about_text', 'textarea'); ?>><?php echo esc_html(get_theme_mod('footer_about_text', 'Building premium American-style timber homes since 1995. We combine traditional craftsmanship with modern techniques to create sustainable, beautiful homes that last for generations.')); ?></p>
                     <div class="social-links">
                         <?php
                         $social_networks = array(
@@ -42,7 +42,7 @@
 
                 <!-- Quick Links -->
                 <div class="footer-section">
-                    <h3><?php esc_html_e('Quick Links', 'timber-homes'); ?></h3>
+                    <h3<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_quick_links_title'); ?>><?php echo esc_html(get_theme_mod('footer_quick_links_title', 'Quick Links')); ?></h3>
                     <div class="footer-links">
                         <?php
                         // Get all pages
@@ -85,7 +85,7 @@
 
                 <!-- Services -->
                 <div class="footer-section">
-                    <h3><?php esc_html_e('Our Services', 'timber-homes'); ?></h3>
+                    <h3<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_services_title'); ?>><?php echo esc_html(get_theme_mod('footer_services_title', 'Our Services')); ?></h3>
                     <div class="footer-links">
                         <?php
                         // Get services from custom post type
@@ -98,7 +98,7 @@
                         
                         if ($services->have_posts()) :
                             while ($services->have_posts()) : $services->the_post();
-                                echo '<a href="' . get_permalink() . '">' . get_the_title() . '</a>';
+                                echo '<a href="' . esc_url(get_permalink()) . '"><span' . new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', get_the_ID()) . '>' . esc_html(get_the_title()) . '</span></a>';
                             endwhile;
                             wp_reset_postdata();
                         else :
@@ -121,7 +121,7 @@
                     </div>
                 <?php else : ?>
                     <div class="footer-section">
-                        <h3><?php esc_html_e('Contact Us', 'timber-homes'); ?></h3>
+                        <h3<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_contact_title'); ?>><?php echo esc_html(get_theme_mod('footer_contact_title', 'Contact Us')); ?></h3>
                         <div class="footer-links">
                             <?php
                             $address = get_theme_mod('footer_address', '123 Main Street, Denver, CO 80202');
@@ -129,10 +129,10 @@
                             $email = get_theme_mod('footer_email', 'info@newhorizon.com');
                             $hours = get_theme_mod('footer_hours', 'Mon-Fri: 8am - 6pm MST');
                             ?>
-                            <p><i class="fas fa-map-marker-alt"></i> <?php echo esc_html($address); ?></p>
-                            <p><i class="fas fa-phone"></i> <a href="tel:<?php echo esc_attr(str_replace(array(' ', '(', ')', '-'), '', $phone)); ?>"><?php echo esc_html($phone); ?></a></p>
-                            <p><i class="fas fa-envelope"></i> <a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a></p>
-                            <p><i class="fas fa-clock"></i> <?php echo esc_html($hours); ?></p>
+                            <p><i class="fas fa-map-marker-alt"></i> <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_address', 'textarea'); ?>><?php echo esc_html($address); ?></span></p>
+                            <p><i class="fas fa-phone"></i> <a href="tel:<?php echo esc_attr(str_replace(array(' ', '(', ')', '-'), '', $phone)); ?>"><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_phone'); ?>><?php echo esc_html($phone); ?></span></a></p>
+                            <p><i class="fas fa-envelope"></i> <a href="mailto:<?php echo esc_attr($email); ?>"><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_email'); ?>><?php echo esc_html($email); ?></span></a></p>
+                            <p><i class="fas fa-clock"></i> <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'footer_hours'); ?>><?php echo esc_html($hours); ?></span></p>
                         </div>
                     </div>
                 <?php endif; ?>

@@ -309,6 +309,80 @@ function new_horizon_resize_large_images($file) {
 }
 add_filter('wp_handle_upload_prefilter', 'new_horizon_resize_large_images');
 
+function new_horizon_sanitize_csv_text($value) {
+    $items = array_filter(array_map('trim', explode(',', sanitize_text_field($value))));
+    return implode(', ', $items);
+}
+
+function new_horizon_get_csv_items($value) {
+    return array_values(array_filter(array_map('trim', explode(',', (string) $value))));
+}
+
+function new_horizon_get_twilio_setting($constant, $theme_mod, $default = '') {
+    return defined($constant) && constant($constant) !== ''
+        ? constant($constant)
+        : get_theme_mod($theme_mod, $default);
+}
+
+function new_horizon_format_twilio_number($number, $channel = 'sms') {
+    $number = trim((string) $number);
+
+    if ($number === '') {
+        return '';
+    }
+
+    if (strpos($number, 'whatsapp:') === 0) {
+        return $number;
+    }
+
+    $number = preg_replace('/[^\d+]/', '', $number);
+
+    if ($number && $number[0] !== '+') {
+        $number = '+' . $number;
+    }
+
+    return $channel === 'whatsapp' ? 'whatsapp:' . $number : $number;
+}
+
+function new_horizon_send_twilio_message($to, $body, $channel = 'sms') {
+    $account_sid = new_horizon_get_twilio_setting('NEW_HORIZON_TWILIO_ACCOUNT_SID', 'new_horizon_twilio_account_sid');
+    $auth_token  = new_horizon_get_twilio_setting('NEW_HORIZON_TWILIO_AUTH_TOKEN', 'new_horizon_twilio_auth_token');
+    $from_key    = $channel === 'whatsapp' ? 'new_horizon_twilio_whatsapp_from' : 'new_horizon_twilio_sms_from';
+    $from_const  = $channel === 'whatsapp' ? 'NEW_HORIZON_TWILIO_WHATSAPP_FROM' : 'NEW_HORIZON_TWILIO_SMS_FROM';
+    $from        = new_horizon_get_twilio_setting($from_const, $from_key);
+
+    if (!$account_sid || !$auth_token || !$from || !$to || !$body) {
+        return new WP_Error('twilio_missing_config', __('Twilio is not fully configured.', 'new-horizon'));
+    }
+
+    $response = wp_remote_post(
+        sprintf('https://api.twilio.com/2010-04-01/Accounts/%s/Messages.json', rawurlencode($account_sid)),
+        array(
+            'timeout' => 15,
+            'headers' => array(
+                'Authorization' => 'Basic ' . base64_encode($account_sid . ':' . $auth_token),
+            ),
+            'body' => array(
+                'From' => new_horizon_format_twilio_number($from, $channel),
+                'To'   => new_horizon_format_twilio_number($to, $channel),
+                'Body' => $body,
+            ),
+        )
+    );
+
+    if (is_wp_error($response)) {
+        return $response;
+    }
+
+    $code = wp_remote_retrieve_response_code($response);
+
+    if ($code < 200 || $code >= 300) {
+        return new WP_Error('twilio_request_failed', wp_remote_retrieve_body($response));
+    }
+
+    return true;
+}
+
 /**
  * Handle Contact Form Submission
  */
@@ -316,6 +390,10 @@ function new_horizon_handle_contact_form() {
     // Verify nonce
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'contact_form_nonce')) {
         wp_send_json_error(array('message' => __('Security check failed. Please refresh and try again.', 'new-horizon')));
+    }
+
+    if (!empty($_POST['website'])) {
+        wp_send_json_error(array('message' => __('Unable to submit this form.', 'new-horizon')));
     }
     
     // Sanitize inputs
@@ -334,8 +412,14 @@ function new_horizon_handle_contact_form() {
         wp_send_json_error(array('message' => __('Please enter a valid email address.', 'new-horizon')));
     }
     
-    // Get admin email
-    $admin_email = get_option('admin_email');
+    // Get recipients
+    $recipient_setting = get_theme_mod('new_horizon_contact_recipients', get_option('admin_email'));
+    $recipients = array_filter(new_horizon_get_csv_items($recipient_setting), 'is_email');
+
+    if (empty($recipients)) {
+        $recipients = array(get_option('admin_email'));
+    }
+
     $site_name = get_bloginfo('name');
     
     // Email subject
@@ -362,32 +446,55 @@ function new_horizon_handle_contact_form() {
     // Email headers
     $headers = array(
         'Content-Type: text/plain; charset=UTF-8',
-        'From: ' . $site_name . ' <' . $admin_email . '>',
+        'From: ' . $site_name . ' <' . get_option('admin_email') . '>',
         'Reply-To: ' . $name . ' <' . $email . '>'
     );
     
-    // Send email
-    $sent = wp_mail($admin_email, $subject, $body, $headers);
-    
-    if ($sent) {
-        // Save to database (optional)
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'contact_submissions';
-        
-        $wpdb->insert(
-            $table_name,
-            array(
-                'name' => $name,
-                'email' => $email,
-                'phone' => $phone,
-                'service' => $service,
-                'message' => $message,
-                'submitted_at' => current_time('mysql'),
-                'ip_address' => $_SERVER['REMOTE_ADDR']
-            ),
-            array('%s', '%s', '%s', '%s', '%s', '%s', '%s')
-        );
-        
+    $email_sent = wp_mail($recipients, $subject, $body, $headers);
+    $notification_sent = (bool) $email_sent;
+
+    // Save to database even if an external notification provider is unavailable.
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'contact_submissions';
+
+    $wpdb->insert(
+        $table_name,
+        array(
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'service' => $service,
+            'message' => $message,
+            'submitted_at' => current_time('mysql'),
+            'ip_address' => isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field($_SERVER['REMOTE_ADDR']) : ''
+        ),
+        array('%s', '%s', '%s', '%s', '%s', '%s', '%s')
+    );
+
+    $notification_body = sprintf(
+        "New lead from %s\nEmail: %s\nPhone: %s\nService: %s\nMessage: %s",
+        $name,
+        $email,
+        $phone ?: 'Not provided',
+        $service ?: 'Not specified',
+        wp_trim_words($message, 24, '...')
+    );
+
+    if (get_theme_mod('new_horizon_enable_sms_notifications', false)) {
+        foreach (new_horizon_get_csv_items(get_theme_mod('new_horizon_sms_recipients', '')) as $sms_to) {
+            $sms_sent = new_horizon_send_twilio_message($sms_to, $notification_body, 'sms');
+            $notification_sent = $notification_sent || $sms_sent === true;
+        }
+    }
+
+    if (get_theme_mod('new_horizon_enable_whatsapp_notifications', false)) {
+        foreach (new_horizon_get_csv_items(get_theme_mod('new_horizon_whatsapp_recipients', '')) as $whatsapp_to) {
+            $whatsapp_sent = new_horizon_send_twilio_message($whatsapp_to, $notification_body, 'whatsapp');
+            $notification_sent = $notification_sent || $whatsapp_sent === true;
+        }
+    }
+
+    if ($notification_sent) {
         wp_send_json_success(array(
             'message' => __('Thank you for your message! We will get back to you soon.', 'new-horizon')
         ));
@@ -939,13 +1046,45 @@ function new_horizon_scripts() {
     wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css', array(), '6.4.0');
 
     // Main stylesheet
-    wp_enqueue_style('timber-homes-style', get_stylesheet_uri(), array(), '1.0.0');
+    $theme_style_path = get_stylesheet_directory() . '/style.css';
+    wp_enqueue_style(
+        'timber-homes-style',
+        get_stylesheet_uri(),
+        array(),
+        file_exists($theme_style_path) ? filemtime($theme_style_path) : '1.0.0'
+    );
 
     // Main JavaScript
     wp_enqueue_script('new-horizon-main', get_template_directory_uri() . '/js/main.js', array('jquery'), '1.0.0', true);
     
     // Instagram Feed
     wp_enqueue_script('new-horizon-instagram', get_template_directory_uri() . '/js/instagram-feed.js', array('jquery'), '1.0.0', true);
+
+    if (is_user_logged_in() && current_user_can('edit_posts') && !is_admin()) {
+        $inline_editor_css = get_template_directory() . '/css/inline-editor.css';
+        $inline_editor_js  = get_template_directory() . '/js/inline-editor.js';
+
+        wp_enqueue_style(
+            'new-horizon-inline-editor',
+            get_template_directory_uri() . '/css/inline-editor.css',
+            array(),
+            file_exists($inline_editor_css) ? filemtime($inline_editor_css) : '1.0.0'
+        );
+        wp_enqueue_script(
+            'new-horizon-inline-editor',
+            get_template_directory_uri() . '/js/inline-editor.js',
+            array('jquery'),
+            file_exists($inline_editor_js) ? filemtime($inline_editor_js) : '1.0.0',
+            true
+        );
+        wp_localize_script('new-horizon-inline-editor', 'NewHorizonInlineEditor', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce'   => wp_create_nonce('new_horizon_inline_edit'),
+            'saving'  => __('Saving...', 'new-horizon'),
+            'saved'   => __('Saved', 'new-horizon'),
+            'error'   => __('Could not save. Please try again.', 'new-horizon'),
+        ));
+    }
 
     if (is_singular() && comments_open() && get_option('thread_comments')) {
         wp_enqueue_script('comment-reply');
@@ -972,6 +1111,172 @@ function new_horizon_admin_scripts($hook) {
     }
 }
 add_action('admin_enqueue_scripts', 'new_horizon_admin_scripts');
+
+/**
+ * Block patterns for editable page sections.
+ */
+require_once get_template_directory() . '/inc/block-patterns.php';
+
+/**
+ * Check whether a page should render its editable block canvas.
+ */
+function new_horizon_page_has_visual_blocks($post_id = null) {
+    $post_id = $post_id ? $post_id : get_queried_object_id();
+
+    if (!$post_id) {
+        return false;
+    }
+
+    $content = get_post_field('post_content', $post_id);
+
+    return trim($content) !== '' && has_blocks($content);
+}
+
+/**
+ * Render the page content as a full-width editable block canvas.
+ */
+function new_horizon_render_visual_page_content() {
+    ?>
+    <main id="primary" class="site-main visual-builder-page">
+        <?php
+        while (have_posts()) :
+            the_post();
+            ?>
+            <article id="post-<?php the_ID(); ?>" <?php post_class('visual-builder-content'); ?>>
+                <?php the_content(); ?>
+            </article>
+            <?php
+        endwhile;
+        ?>
+    </main>
+    <?php
+}
+
+/**
+ * Return attributes for frontend inline-editable text fields.
+ */
+function new_horizon_inline_edit_attrs($source, $key, $type = 'text', $post_id = 0) {
+    if (!is_user_logged_in()) {
+        return '';
+    }
+
+    $post_id = $post_id ? absint($post_id) : get_queried_object_id();
+
+    if ($source === 'theme_mod' && !current_user_can('edit_theme_options')) {
+        return '';
+    }
+
+    if ($source !== 'theme_mod' && (!$post_id || !current_user_can('edit_post', $post_id))) {
+        return '';
+    }
+
+    return sprintf(
+        ' data-nh-source="%s" data-nh-key="%s" data-nh-type="%s" data-nh-post-id="%d" tabindex="0"',
+        esc_attr($source),
+        esc_attr($key),
+        esc_attr($type),
+        esc_attr($post_id)
+    );
+}
+
+/**
+ * Return attributes for frontend inline-editable array fields.
+ */
+function new_horizon_inline_edit_array_attrs($key, $index, $subkey, $type = 'text', $post_id = 0) {
+    if (!is_user_logged_in()) {
+        return '';
+    }
+
+    $post_id = $post_id ? absint($post_id) : get_queried_object_id();
+
+    if (!$post_id || !current_user_can('edit_post', $post_id)) {
+        return '';
+    }
+
+    return sprintf(
+        ' data-nh-source="post_meta_array" data-nh-key="%s" data-nh-index="%d" data-nh-subkey="%s" data-nh-type="%s" data-nh-post-id="%d" tabindex="0"',
+        esc_attr($key),
+        absint($index),
+        esc_attr($subkey),
+        esc_attr($type),
+        esc_attr($post_id)
+    );
+}
+
+/**
+ * Save inline edits from the frontend editor.
+ */
+function new_horizon_save_inline_edit() {
+    check_ajax_referer('new_horizon_inline_edit', 'nonce');
+
+    $source  = isset($_POST['source']) ? sanitize_key($_POST['source']) : '';
+    $key     = isset($_POST['key']) ? sanitize_key($_POST['key']) : '';
+    $index   = isset($_POST['index']) ? absint($_POST['index']) : null;
+    $subkey  = isset($_POST['subkey']) ? sanitize_key($_POST['subkey']) : '';
+    $type    = isset($_POST['type']) ? sanitize_key($_POST['type']) : 'text';
+    $post_id = isset($_POST['postId']) ? absint($_POST['postId']) : 0;
+    $value   = isset($_POST['value']) ? wp_unslash($_POST['value']) : '';
+
+    if (!$source || !$key) {
+        wp_send_json_error(array('message' => __('Missing editable field data.', 'new-horizon')));
+    }
+
+    if ($type === 'html') {
+        $value = wp_kses_post($value);
+    } else {
+        $value = $type === 'textarea' ? sanitize_textarea_field($value) : sanitize_text_field($value);
+    }
+
+    if ($source === 'theme_mod') {
+        if (!current_user_can('edit_theme_options')) {
+            wp_send_json_error(array('message' => __('You do not have permission to edit theme settings.', 'new-horizon')));
+        }
+
+        set_theme_mod($key, $value);
+        wp_send_json_success(array('value' => $value));
+    }
+
+    if (!$post_id || !current_user_can('edit_post', $post_id)) {
+        wp_send_json_error(array('message' => __('You do not have permission to edit this page.', 'new-horizon')));
+    }
+
+    if ($source === 'post_meta') {
+        update_post_meta($post_id, $key, $value);
+        wp_send_json_success(array('value' => $value));
+    }
+
+    if ($source === 'post_meta_array') {
+        if ($index === null || !$subkey) {
+            wp_send_json_error(array('message' => __('Missing repeatable field data.', 'new-horizon')));
+        }
+
+        $items = get_post_meta($post_id, $key, true);
+
+        if (!is_array($items) || !isset($items[$index]) || !is_array($items[$index])) {
+            wp_send_json_error(array('message' => __('This repeatable field could not be found.', 'new-horizon')));
+        }
+
+        $items[$index][$subkey] = $value;
+        update_post_meta($post_id, $key, $items);
+        wp_send_json_success(array('value' => $value));
+    }
+
+    if ($source === 'post_field' && in_array($key, array('post_title', 'post_content'), true)) {
+        $post_data = array('ID' => $post_id);
+        $post_data[$key] = $value;
+
+        $updated = wp_update_post($post_data, true);
+
+        if (is_wp_error($updated)) {
+            wp_send_json_error(array('message' => $updated->get_error_message()));
+        }
+
+        wp_send_json_success(array('value' => $post_data[$key]));
+    }
+
+    wp_send_json_error(array('message' => __('Unsupported editable field.', 'new-horizon')));
+}
+add_action('wp_ajax_new_horizon_save_inline_edit', 'new_horizon_save_inline_edit');
 
 /**
  * Custom Post Type: Projects
@@ -1044,52 +1349,6 @@ function new_horizon_register_project_taxonomy() {
     register_taxonomy('project_category', array('project'), $args);
 }
 add_action('init', 'new_horizon_register_project_taxonomy');
-
-/**
- * AJAX Handler for Contact Form
- */
-function new_horizon_submit_contact_form() {
-    // Verify nonce
-    check_ajax_referer('timber_homes_nonce', 'nonce');
-
-    // Sanitize input
-    $name = sanitize_text_field($_POST['name']);
-    $email = sanitize_email($_POST['email']);
-    $phone = sanitize_text_field($_POST['phone']);
-    $service = sanitize_text_field($_POST['service']);
-    $message = sanitize_textarea_field($_POST['message']);
-
-    // Validate
-    if (empty($name) || empty($email) || empty($message)) {
-        wp_send_json_error(array('message' => 'Please fill in all required fields.'));
-    }
-
-    if (!is_email($email)) {
-        wp_send_json_error(array('message' => 'Please enter a valid email address.'));
-    }
-
-    // Prepare email
-    $to = get_option('admin_email');
-    $subject = 'New Contact Form Submission from ' . $name;
-    $body = "Name: $name\n";
-    $body .= "Email: $email\n";
-    $body .= "Phone: $phone\n";
-    $body .= "Service: $service\n\n";
-    $body .= "Message:\n$message\n";
-
-    $headers = array('Content-Type: text/plain; charset=UTF-8', "Reply-To: $email");
-
-    // Send email
-    $sent = wp_mail($to, $subject, $body, $headers);
-
-    if ($sent) {
-        wp_send_json_success(array('message' => 'Thank you for your message!'));
-    } else {
-        wp_send_json_error(array('message' => 'There was an error sending your message.'));
-    }
-}
-add_action('wp_ajax_submit_contact_form', 'new_horizon_submit_contact_form');
-add_action('wp_ajax_nopriv_submit_contact_form', 'new_horizon_submit_contact_form');
 
 /**
  * Custom Excerpt Length
@@ -1428,6 +1687,115 @@ function new_horizon_customize_register($wp_customize) {
     $wp_customize->add_control('new_horizon_whatsapp', array(
         'label'       => __('WhatsApp Number', 'new-horizon'),
         'description' => __('Enter number without + or spaces (e.g., 15551234567)', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'text',
+    ));
+
+    // Contact form notification settings
+    $wp_customize->add_setting('new_horizon_contact_recipients', array(
+        'default'           => get_option('admin_email'),
+        'sanitize_callback' => 'new_horizon_sanitize_csv_text',
+    ));
+
+    $wp_customize->add_control('new_horizon_contact_recipients', array(
+        'label'       => __('Contact Form Email Recipients', 'new-horizon'),
+        'description' => __('Comma-separated email addresses that receive form submissions.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'textarea',
+    ));
+
+    $wp_customize->add_setting('new_horizon_enable_sms_notifications', array(
+        'default'           => false,
+        'sanitize_callback' => 'wp_validate_boolean',
+    ));
+
+    $wp_customize->add_control('new_horizon_enable_sms_notifications', array(
+        'label'       => __('Enable SMS Notifications', 'new-horizon'),
+        'description' => __('Requires Twilio credentials configured below or in wp-config.php constants.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'checkbox',
+    ));
+
+    $wp_customize->add_setting('new_horizon_sms_recipients', array(
+        'default'           => '',
+        'sanitize_callback' => 'new_horizon_sanitize_csv_text',
+    ));
+
+    $wp_customize->add_control('new_horizon_sms_recipients', array(
+        'label'       => __('SMS Recipients', 'new-horizon'),
+        'description' => __('Comma-separated numbers with country code, e.g. +16788189424.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'textarea',
+    ));
+
+    $wp_customize->add_setting('new_horizon_enable_whatsapp_notifications', array(
+        'default'           => false,
+        'sanitize_callback' => 'wp_validate_boolean',
+    ));
+
+    $wp_customize->add_control('new_horizon_enable_whatsapp_notifications', array(
+        'label'       => __('Enable WhatsApp Notifications', 'new-horizon'),
+        'description' => __('Requires Twilio WhatsApp sender approval or sandbox setup.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'checkbox',
+    ));
+
+    $wp_customize->add_setting('new_horizon_whatsapp_recipients', array(
+        'default'           => '',
+        'sanitize_callback' => 'new_horizon_sanitize_csv_text',
+    ));
+
+    $wp_customize->add_control('new_horizon_whatsapp_recipients', array(
+        'label'       => __('WhatsApp Notification Recipients', 'new-horizon'),
+        'description' => __('Comma-separated numbers with country code, e.g. +16788189424.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'textarea',
+    ));
+
+    $wp_customize->add_setting('new_horizon_twilio_account_sid', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('new_horizon_twilio_account_sid', array(
+        'label'       => __('Twilio Account SID', 'new-horizon'),
+        'description' => __('Prefer defining NEW_HORIZON_TWILIO_ACCOUNT_SID in wp-config.php for production.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'text',
+    ));
+
+    $wp_customize->add_setting('new_horizon_twilio_auth_token', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('new_horizon_twilio_auth_token', array(
+        'label'       => __('Twilio Auth Token', 'new-horizon'),
+        'description' => __('Prefer defining NEW_HORIZON_TWILIO_AUTH_TOKEN in wp-config.php for production.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'password',
+    ));
+
+    $wp_customize->add_setting('new_horizon_twilio_sms_from', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('new_horizon_twilio_sms_from', array(
+        'label'       => __('Twilio SMS From Number', 'new-horizon'),
+        'description' => __('A Twilio SMS-capable number, e.g. +15551234567.', 'new-horizon'),
+        'section'     => 'new_horizon_contact',
+        'type'        => 'text',
+    ));
+
+    $wp_customize->add_setting('new_horizon_twilio_whatsapp_from', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ));
+
+    $wp_customize->add_control('new_horizon_twilio_whatsapp_from', array(
+        'label'       => __('Twilio WhatsApp From Number', 'new-horizon'),
+        'description' => __('Use your approved WhatsApp sender or sandbox number, e.g. +14155238886.', 'new-horizon'),
         'section'     => 'new_horizon_contact',
         'type'        => 'text',
     ));

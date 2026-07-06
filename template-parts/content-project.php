@@ -19,14 +19,14 @@ $year = get_post_meta(get_the_ID(), '_project_year', true);
     <?php endif; ?>
 
     <div class="portfolio-overlay">
-        <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-        <p><?php echo esc_html(get_the_excerpt()); ?></p>
+        <h3><a href="<?php the_permalink(); ?>"><span<?php echo new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', get_the_ID()); ?>><?php the_title(); ?></span></a></h3>
+        <p<?php echo new_horizon_inline_edit_attrs('post_field', 'post_content', 'textarea', get_the_ID()); ?>><?php echo esc_html(get_the_excerpt()); ?></p>
         <div class="portfolio-meta">
             <?php if ($location) : ?>
-                <span><i class="fas fa-map-marker-alt"></i> <?php echo esc_html($location); ?></span>
+                <span><i class="fas fa-map-marker-alt"></i> <span<?php echo new_horizon_inline_edit_attrs('post_meta', '_project_location', 'text', get_the_ID()); ?>><?php echo esc_html($location); ?></span></span>
             <?php endif; ?>
             <?php if ($size) : ?>
-                <span><i class="fas fa-ruler-combined"></i> <?php echo esc_html($size); ?> sq ft</span>
+                <span><i class="fas fa-ruler-combined"></i> <span<?php echo new_horizon_inline_edit_attrs('post_meta', '_project_size', 'text', get_the_ID()); ?>><?php echo esc_html($size); ?></span> sq ft</span>
             <?php endif; ?>
         </div>
     </div>

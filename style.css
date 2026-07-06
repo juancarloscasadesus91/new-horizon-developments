@@ -2825,3 +2825,42 @@ select:focus {
     min-height: 500px;
     object-fit: cover;
 }
+
+@media (max-width: 768px) {
+    body.single-project .cs-two-col,
+    body.single-project .cs-grid-2x2,
+    .single-project .cs-two-col,
+    .single-project .cs-grid-2x2,
+    .cs-section .cs-two-col,
+    .cs-section .cs-grid-2x2 {
+        display: block !important;
+        grid-template-columns: none !important;
+        width: 100% !important;
+    }
+
+    body.single-project .cs-two-col > *,
+    body.single-project .cs-grid-2x2 > *,
+    .single-project .cs-two-col > *,
+    .single-project .cs-grid-2x2 > *,
+    .cs-section .cs-two-col > *,
+    .cs-section .cs-grid-2x2 > * {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-bottom: 1.5rem !important;
+        box-sizing: border-box !important;
+    }
+
+    body.single-project .cs-image-wrapper,
+    body.single-project .cs-image-wrapper img,
+    .single-project .cs-image-wrapper,
+    .single-project .cs-image-wrapper img,
+    .cs-section .cs-image-wrapper,
+    .cs-section .cs-image-wrapper img {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+}

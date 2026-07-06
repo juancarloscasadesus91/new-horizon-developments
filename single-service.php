@@ -10,6 +10,7 @@ get_header();
 ?>
 
 <?php while (have_posts()) : the_post(); 
+    $service_id = get_the_ID();
     $icon = get_post_meta(get_the_ID(), '_service_icon', true);
     $short_desc = get_post_meta(get_the_ID(), '_service_short_description', true);
 ?>
@@ -23,7 +24,7 @@ get_header();
                     <i class="<?php echo esc_attr($icon); ?>"></i>
                 </div>
             <?php endif; ?>
-            <h1 class="page-title"><?php the_title(); ?></h1>
+            <h1<?php echo new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', $service_id); ?> class="page-title"><?php the_title(); ?></h1>
         </div>
     </div>
 </section>
@@ -44,12 +45,12 @@ get_header();
 
                 <!-- About The Service -->
                 <div class="service-about reveal">
-                    <h2 class="service-section-title"><?php esc_html_e('About The Service', 'new-horizon'); ?></h2>
+                    <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_about_title', 'text', $service_id); ?> class="service-section-title"><?php echo esc_html(get_theme_mod('new_horizon_single_service_about_title', 'About The Service')); ?></h2>
                     <?php if ($short_desc) : ?>
-                        <p class="service-intro"><?php echo esc_html($short_desc); ?></p>
+                        <p<?php echo new_horizon_inline_edit_attrs('post_meta', '_service_short_description', 'textarea', $service_id); ?> class="service-intro"><?php echo esc_html($short_desc); ?></p>
                     <?php endif; ?>
-                    <div class="service-content">
-                        <?php the_content(); ?>
+                    <div<?php echo new_horizon_inline_edit_attrs('post_field', 'post_content', 'html', $service_id); ?> class="service-content">
+                        <?php echo wp_kses_post(get_the_content()); ?>
                     </div>
                 </div>
 
@@ -69,11 +70,11 @@ get_header();
                     if ($has_content) :
                 ?>
                 <div class="service-why-choose reveal">
-                    <h2 class="service-section-title"><?php esc_html_e('Why Choose Us?', 'new-horizon'); ?></h2>
-                    <p><?php esc_html_e('We bring decades of experience and unwavering commitment to quality in every project we undertake.', 'new-horizon'); ?></p>
+                    <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_benefits_title', 'text', $service_id); ?> class="service-section-title"><?php echo esc_html(get_theme_mod('new_horizon_single_service_benefits_title', 'Why Choose Us?')); ?></h2>
+                    <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_benefits_intro', 'textarea', $service_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_single_service_benefits_intro', 'We bring decades of experience and unwavering commitment to quality in every project we undertake.')); ?></p>
                     
                     <div class="service-benefits-grid">
-                        <?php foreach ($benefits as $benefit) : 
+                        <?php foreach ($benefits as $index => $benefit) : 
                             if (empty($benefit['title']) && empty($benefit['description'])) continue;
                         ?>
                         <div class="service-benefit-item">
@@ -84,11 +85,11 @@ get_header();
                             <?php endif; ?>
                             
                             <?php if (!empty($benefit['title'])) : ?>
-                            <h3><?php echo esc_html($benefit['title']); ?></h3>
+                            <h3<?php echo new_horizon_inline_edit_array_attrs('_service_benefits', $index, 'title', 'text', $service_id); ?>><?php echo esc_html($benefit['title']); ?></h3>
                             <?php endif; ?>
                             
                             <?php if (!empty($benefit['description'])) : ?>
-                            <p><?php echo esc_html($benefit['description']); ?></p>
+                            <p<?php echo new_horizon_inline_edit_array_attrs('_service_benefits', $index, 'description', 'textarea', $service_id); ?>><?php echo esc_html($benefit['description']); ?></p>
                             <?php endif; ?>
                         </div>
                         <?php endforeach; ?>
@@ -107,7 +108,7 @@ get_header();
                 
                 <!-- Other Services -->
                 <div class="service-sidebar-widget reveal">
-                    <h3 class="sidebar-widget-title"><?php esc_html_e('Other Services', 'new-horizon'); ?></h3>
+                    <h3<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_sidebar_title', 'text', $service_id); ?> class="sidebar-widget-title"><?php echo esc_html(get_theme_mod('new_horizon_single_service_sidebar_title', 'Other Services')); ?></h3>
                     <div class="sidebar-services-list">
                         <?php
                         $all_services = new WP_Query(array(
@@ -123,7 +124,7 @@ get_header();
                                 $is_current = (get_the_ID() == get_queried_object_id());
                                 ?>
                                 <a href="<?php the_permalink(); ?>" class="sidebar-service-item <?php echo $is_current ? 'active' : ''; ?>">
-                                    <?php the_title(); ?>
+                                    <span<?php echo new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', get_the_ID()); ?>><?php the_title(); ?></span>
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
                                 <?php
@@ -140,17 +141,17 @@ get_header();
                         <div class="contact-widget-icon">
                             <i class="fas fa-headset"></i>
                         </div>
-                        <h3><?php esc_html_e('Need Assistance?', 'new-horizon'); ?></h3>
-                        <p><?php esc_html_e('Our team is ready to help you with your project.', 'new-horizon'); ?></p>
+                        <h3<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_contact_title', 'text', $service_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_single_service_contact_title', 'Need Assistance?')); ?></h3>
+                        <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_contact_text', 'textarea', $service_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_single_service_contact_text', 'Our team is ready to help you with your project.')); ?></p>
                         <?php
                         $phone = get_theme_mod('new_horizon_phone', '+1 (555) 123-4567');
                         $whatsapp = get_theme_mod('new_horizon_whatsapp', '15551234567');
                         ?>
                         <a href="https://wa.me/<?php echo esc_attr($whatsapp); ?>" class="btn btn-whatsapp btn-block" target="_blank" rel="noopener noreferrer">
-                            <i class="fab fa-whatsapp"></i> <?php esc_html_e('WhatsApp Us', 'new-horizon'); ?>
+                            <i class="fab fa-whatsapp"></i> <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_whatsapp_label', 'text', $service_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_single_service_whatsapp_label', 'WhatsApp Us')); ?></span>
                         </a>
                         <a href="<?php echo esc_url(home_url('/#contact')); ?>" class="btn btn-outline btn-block">
-                            <i class="fas fa-envelope"></i> <?php esc_html_e('Get a Quote', 'new-horizon'); ?>
+                            <i class="fas fa-envelope"></i> <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_single_service_quote_label', 'text', $service_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_single_service_quote_label', 'Get a Quote')); ?></span>
                         </a>
                     </div>
                 </div>

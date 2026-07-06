@@ -10,6 +10,7 @@
 get_header();
 
 while (have_posts()) : the_post();
+    $project_id = get_the_ID();
     
     // Get basic project data
     $location = get_post_meta(get_the_ID(), '_project_location', true);
@@ -51,6 +52,43 @@ while (have_posts()) : the_post();
     $primary_closet = get_post_meta(get_the_ID(), '_cs_primary_closet', true);
     $office_image = get_post_meta(get_the_ID(), '_cs_office_image', true);
     $powder_image = get_post_meta(get_the_ID(), '_cs_powder_image', true);
+
+    $cs_text_defaults = array(
+        '_cs_ext_front_title' => 'The Arrival',
+        '_cs_ext_front_copy' => 'The front elevation commands attention without demanding it. White brick, dark steel accents, and a three-car garage create a presence that is modern, grounded, and unmistakably refined.',
+        '_cs_ext_rear_title' => 'Outdoor Living',
+        '_cs_ext_rear_copy' => 'The rear reveals its full scale - stacked covered porches on every level, open to the wooded acreage beyond. This is where privacy meets lifestyle.',
+        '_cs_entry_title' => 'Where the Home Announces Itself',
+        '_cs_entry_feature_1' => 'Dual floating staircases with LED tread lighting',
+        '_cs_entry_feature_2' => 'Three-tier brass ring chandelier',
+        '_cs_entry_feature_3' => 'Double-height ceilings',
+        '_cs_entry_feature_4' => 'Direct rear sightline to outdoor living',
+        '_cs_living_label' => 'Living Room',
+        '_cs_dining_label' => 'Dining Room',
+        '_cs_kitchen_main_label' => 'Main Kitchen',
+        '_cs_kitchen_prep_label' => 'Prep Kitchen & Butler\'s Pantry',
+        '_cs_kitchen_copy' => 'The kitchen was designed for two kinds of people: those who love to cook, and those who love to entertain while someone else does. The main kitchen features dark custom cabinetry, a marble waterfall island, and professional-grade appliances throughout. The adjacent prep kitchen keeps the main space clean and guest-ready at all times.',
+        '_cs_kitchen_details_label' => 'Design details:',
+        '_cs_kitchen_details' => 'Custom dark cabinetry with brass hardware - Marble waterfall island - 62" integrated refrigerator - Dedicated prep kitchen - Walk-in pantry - Pot filler at range',
+        '_cs_primary_bed_label' => 'Primary Bedroom',
+        '_cs_primary_bath_label' => 'Primary Bath - Spa Suite',
+        '_cs_primary_vanity_label' => 'Primary Bath - Vanity',
+        '_cs_primary_closet_label' => 'His Walk-In Closet',
+        '_cs_primary_copy' => 'The primary suite occupies its own wing of the upper level. Bedroom, spa-style bath, dual walk-in closets, and a private covered balcony overlooking the rear acreage. Every detail was chosen to feel like a retreat - not just a place to sleep.',
+        '_cs_office_label' => 'Executive Home Office',
+        '_cs_powder_label' => 'Powder Room',
+        '_cs_fp_main_title' => 'First Floor - Main Level',
+        '_cs_fp_upper_title' => 'Second Floor - Upper Level',
+    );
+
+    $cs_text = function($key) use ($project_id, $cs_text_defaults) {
+        $value = get_post_meta($project_id, $key, true);
+        return $value !== '' ? $value : $cs_text_defaults[$key];
+    };
+
+    $cs_text_attrs = function($key, $type = 'text') use ($project_id) {
+        return new_horizon_inline_edit_attrs('post_meta', $key, $type, $project_id);
+    };
 ?>
 
 <!-- Case Study Hero Section -->
@@ -61,7 +99,7 @@ while (have_posts()) : the_post();
     <div class="container" style="padding-bottom: 5rem; position: relative; z-index: 2;">
         <div class="case-study-hero-content" style="max-width: 700px;">
             <?php if ($hero_eyebrow || $location || $size || $cs_acres) : ?>
-                <p class="case-study-eyebrow" style="font-size: 12px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #D4AF37; margin-bottom: 0.75rem;">
+                <p<?php echo $hero_eyebrow ? new_horizon_inline_edit_attrs('post_meta', '_cs_hero_eyebrow', 'text', $project_id) : ''; ?> class="case-study-eyebrow" style="font-size: 12px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #D4AF37; margin-bottom: 0.75rem;">
                     <?php 
                     if ($hero_eyebrow) {
                         echo esc_html($hero_eyebrow);
@@ -76,12 +114,12 @@ while (have_posts()) : the_post();
                 </p>
             <?php endif; ?>
             
-            <h1 class="case-study-title" style="font-family: var(--font-primary); font-size: clamp(3rem, 6vw, 5rem); font-weight: 400; color: #fff; line-height: 1.05; margin-bottom: 1.25rem;">
+            <h1<?php echo new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', $project_id); ?> class="case-study-title" style="font-family: var(--font-primary); font-size: clamp(3rem, 6vw, 5rem); font-weight: 400; color: #fff; line-height: 1.05; margin-bottom: 1.25rem;">
                 <?php the_title(); ?>
             </h1>
             
             <?php if ($hero_subtitle) : ?>
-                <p class="case-study-subtitle" style="font-size: 1.125rem; font-weight: 300; color: rgb(255 255 255 / 0.89); line-height: 1.65; max-width: 650px;">
+                <p<?php echo new_horizon_inline_edit_attrs('post_meta', '_cs_hero_subtitle', 'textarea', $project_id); ?> class="case-study-subtitle" style="font-size: 1.125rem; font-weight: 300; color: rgb(255 255 255 / 0.89); line-height: 1.65; max-width: 650px;">
                     <?php echo esc_html($hero_subtitle); ?>
                 </p>
             <?php endif; ?>
@@ -97,19 +135,19 @@ while (have_posts()) : the_post();
         <?php if ($cs_bedrooms || $cs_bathrooms || $cs_garage || $cs_basement) : ?>
             <div class="case-study-stats" style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 3rem; flex-wrap: wrap; font-size: 14px; color: var(--color-text-muted, #7A7570);">
                 <?php if ($cs_bedrooms) : ?>
-                    <span><strong style="color: #D4AF37;"><?php echo esc_html($cs_bedrooms); ?></strong> Bedrooms</span>
+                    <span><strong<?php echo new_horizon_inline_edit_attrs('post_meta', '_cs_bedrooms', 'text', $project_id); ?> style="color: #D4AF37;"><?php echo esc_html($cs_bedrooms); ?></strong> Bedrooms</span>
                 <?php endif; ?>
                 <?php if ($cs_bathrooms) : ?>
                     <span>·</span>
-                    <span><strong style="color: #D4AF37;"><?php echo esc_html($cs_bathrooms); ?></strong> Bathrooms</span>
+                    <span><strong<?php echo new_horizon_inline_edit_attrs('post_meta', '_cs_bathrooms', 'text', $project_id); ?> style="color: #D4AF37;"><?php echo esc_html($cs_bathrooms); ?></strong> Bathrooms</span>
                 <?php endif; ?>
                 <?php if ($cs_garage) : ?>
                     <span>·</span>
-                    <span><strong style="color: #D4AF37;"><?php echo esc_html($cs_garage); ?></strong> Car Garage</span>
+                    <span><strong<?php echo new_horizon_inline_edit_attrs('post_meta', '_cs_garage', 'text', $project_id); ?> style="color: #D4AF37;"><?php echo esc_html($cs_garage); ?></strong> Car Garage</span>
                 <?php endif; ?>
                 <?php if ($cs_basement) : ?>
                     <span>·</span>
-                    <span><?php echo esc_html($cs_basement); ?></span>
+                    <span<?php echo new_horizon_inline_edit_attrs('post_meta', '_cs_basement', 'text', $project_id); ?>><?php echo esc_html($cs_basement); ?></span>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -117,7 +155,7 @@ while (have_posts()) : the_post();
         <!-- Opening Quote -->
         <?php if ($intro_quote) : ?>
             <div style="position: relative; max-width: 800px; margin: 0 auto;">
-                <blockquote class="case-study-quote" style="font-family: var(--font-primary); font-size: clamp(1.125rem, 2.5vw, 1.375rem); font-weight: 300; font-style: italic; color: #D4AF37; line-height: 1.7; margin: 0; padding: 0 2rem;">
+                <blockquote<?php echo new_horizon_inline_edit_attrs('post_meta', '_cs_intro_quote', 'textarea', $project_id); ?> class="case-study-quote" style="font-family: var(--font-primary); font-size: clamp(1.125rem, 2.5vw, 1.375rem); font-weight: 300; font-style: italic; color: #D4AF37; line-height: 1.7; margin: 0; padding: 0 2rem;">
                     <?php echo esc_html($intro_quote); ?>
                 </blockquote>
             </div>
@@ -131,11 +169,11 @@ while (have_posts()) : the_post();
 <!-- SECTION 03: Exterior (Front & Rear) -->
 <section class="cs-section cs-exterior section" style="padding: 5rem 0;">
     <div class="container" style="max-width: 1200px;">
-        <h2 class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
-            The Exterior
+        <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_exterior_title', 'text', $project_id); ?> class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
+            <?php echo esc_html(get_theme_mod('new_horizon_case_study_exterior_title', 'The Exterior')); ?>
         </h2>
         
-        <div class="cs-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="cs-two-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 2rem; margin-bottom: 2rem;">
             <!-- Front Elevation -->
             <div class="cs-image-block">
                 <?php if ($ext_front) : ?>
@@ -143,9 +181,9 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($ext_front); ?>" alt="Front Elevation">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1.125rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.5rem;">The Arrival</h3>
-                <p style="font-size: 14px; color: var(--color-text, #E8E2D5); line-height: 1.75;">
-                    The front elevation commands attention without demanding it. White brick, dark steel accents, and a three-car garage create a presence that is modern, grounded, and unmistakably refined.
+                <h3<?php echo $cs_text_attrs('_cs_ext_front_title'); ?> style="font-size: 1.125rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.5rem;"><?php echo esc_html($cs_text('_cs_ext_front_title')); ?></h3>
+                <p<?php echo $cs_text_attrs('_cs_ext_front_copy', 'textarea'); ?> style="font-size: 14px; color: var(--color-text, #E8E2D5); line-height: 1.75;">
+                    <?php echo esc_html($cs_text('_cs_ext_front_copy')); ?>
                 </p>
             </div>
             
@@ -156,9 +194,13 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($ext_rear); ?>" alt="Rear Elevation">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1.125rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.5rem;">Outdoor Living</h3>
-                <p style="font-size: 14px; color: var(--color-text, #E8E2D5); line-height: 1.75;">
+                <h3<?php echo $cs_text_attrs('_cs_ext_rear_title'); ?> style="font-size: 1.125rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.5rem;"><?php echo esc_html($cs_text('_cs_ext_rear_title')); ?></h3>
+                <p<?php echo $cs_text_attrs('_cs_ext_rear_copy', 'textarea'); ?> style="font-size: 14px; color: var(--color-text, #E8E2D5); line-height: 1.75;">
+                    <?php if (get_post_meta($project_id, '_cs_ext_rear_copy', true) !== '') : ?>
+                        <?php echo esc_html($cs_text('_cs_ext_rear_copy')); ?>
+                    <?php else : ?>
                     The rear reveals its full scale — stacked covered porches on every level, open to the wooded acreage beyond. This is where privacy meets lifestyle.
+                    <?php endif; ?>
                 </p>
             </div>
         </div>
@@ -168,7 +210,7 @@ while (have_posts()) : the_post();
 <!-- SECTION 04: Entry Foyer (Showstopper) -->
 <section class="cs-section cs-foyer section" style="background: var(--color-dark-2, #141414); padding: 5rem 0;">
     <div class="container" style="max-width: 1200px;">
-        <div class="cs-two-col" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: center;">
+        <div class="cs-two-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 3rem; align-items: center;">
             <!-- Large Foyer Image -->
             <?php if ($foyer_image) : ?>
             <div class="cs-image-wrapper">
@@ -179,19 +221,19 @@ while (have_posts()) : the_post();
             <!-- Copy Block -->
             <div class="cs-copy-block">
                 <p style="font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #D4AF37; margin-bottom: 0.75rem;">
-                    The Entry Experience
+                    <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_entry_label', 'text', $project_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_case_study_entry_label', 'The Entry Experience')); ?></span>
                 </p>
-                <h2 style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 400; color: #fff; margin-bottom: 1.25rem; line-height: 1.2;">
-                    Where the Home Announces Itself
+                <h2<?php echo $cs_text_attrs('_cs_entry_title'); ?> style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 400; color: #fff; margin-bottom: 1.25rem; line-height: 1.2;">
+                    <?php echo esc_html($cs_text('_cs_entry_title')); ?>
                 </h2>
                 <p style="font-size: 15px; color: var(--color-text, #E8E2D5); line-height: 1.8; margin-bottom: 1.5rem;">
-                    From the moment you step inside, the home sets the tone. Dual floating staircases rise on either side of the foyer, each tread lit from below. A three-tiered brass chandelier anchors the soaring double-height ceiling. This is not an entryway — it is an arrival.
+                    <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_entry_copy', 'textarea', $project_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_case_study_entry_copy', 'From the moment you step inside, the home sets the tone. Dual floating staircases rise on either side of the foyer, each tread lit from below. A three-tiered brass chandelier anchors the soaring double-height ceiling. This is not an entryway - it is an arrival.')); ?></span>
                 </p>
                 <ul style="list-style: none; padding: 0; font-size: 14px; color: var(--color-text-muted, #7A7570); line-height: 2;">
-                    <li>✦ &nbsp;Dual floating staircases with LED tread lighting</li>
-                    <li>✦ &nbsp;Three-tier brass ring chandelier</li>
-                    <li>✦ &nbsp;Double-height ceilings</li>
-                    <li>✦ &nbsp;Direct rear sightline to outdoor living</li>
+                    <li>✦ &nbsp;<span<?php echo $cs_text_attrs('_cs_entry_feature_1'); ?>><?php echo esc_html($cs_text('_cs_entry_feature_1')); ?></span></li>
+                    <li>✦ &nbsp;<span<?php echo $cs_text_attrs('_cs_entry_feature_2'); ?>><?php echo esc_html($cs_text('_cs_entry_feature_2')); ?></span></li>
+                    <li>✦ &nbsp;<span<?php echo $cs_text_attrs('_cs_entry_feature_3'); ?>><?php echo esc_html($cs_text('_cs_entry_feature_3')); ?></span></li>
+                    <li>✦ &nbsp;<span<?php echo $cs_text_attrs('_cs_entry_feature_4'); ?>><?php echo esc_html($cs_text('_cs_entry_feature_4')); ?></span></li>
                 </ul>
             </div>
         </div>
@@ -201,11 +243,11 @@ while (have_posts()) : the_post();
 <!-- SECTION 05: Living & Dining -->
 <section class="cs-section cs-living-dining section" style="padding: 5rem 0;">
     <div class="container" style="max-width: 1200px;">
-        <h2 class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
-            Living & Dining
+        <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_living_title', 'text', $project_id); ?> class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
+            <?php echo esc_html(get_theme_mod('new_horizon_case_study_living_title', 'Living & Dining')); ?>
         </h2>
         
-        <div class="cs-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div class="cs-two-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 2rem;">
             <!-- Living Room -->
             <div>
                 <?php if ($living_image) : ?>
@@ -213,7 +255,7 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($living_image); ?>" alt="Living Room">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Living Room</h3>
+                <h3<?php echo $cs_text_attrs('_cs_living_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_living_label')); ?></h3>
             </div>
             
             <!-- Dining Room -->
@@ -223,7 +265,7 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($dining_image); ?>" alt="Dining Room">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Dining Room</h3>
+                <h3<?php echo $cs_text_attrs('_cs_dining_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_dining_label')); ?></h3>
             </div>
         </div>
     </div>
@@ -232,11 +274,11 @@ while (have_posts()) : the_post();
 <!-- SECTION 06: Kitchen -->
 <section class="cs-section cs-kitchen section" style="background: var(--color-dark-2, #141414); padding: 5rem 0;">
     <div class="container" style="max-width: 1200px;">
-        <h2 class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
-            Chef's Kitchen & Prep Kitchen
+        <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_kitchen_title', 'text', $project_id); ?> class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
+            <?php echo esc_html(get_theme_mod('new_horizon_case_study_kitchen_title', 'Chef\'s Kitchen & Prep Kitchen')); ?>
         </h2>
         
-        <div class="cs-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="cs-two-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 2rem; margin-bottom: 2rem;">
             <!-- Main Kitchen -->
             <div class="cs-image-block">
                 <?php if ($kitchen_main) : ?>
@@ -244,7 +286,7 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($kitchen_main); ?>" alt="Main Kitchen">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Main Kitchen</h3>
+                <h3<?php echo $cs_text_attrs('_cs_kitchen_main_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_kitchen_main_label')); ?></h3>
             </div>
             
             <!-- Prep Kitchen -->
@@ -254,16 +296,16 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($kitchen_prep); ?>" alt="Prep Kitchen">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Prep Kitchen & Butler's Pantry</h3>
+                <h3<?php echo $cs_text_attrs('_cs_kitchen_prep_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_kitchen_prep_label')); ?></h3>
             </div>
         </div>
         
         <div class="cs-copy-block" style="max-width: 900px; margin: 0 auto;">
-            <p style="font-size: 15px; color: var(--color-text, #E8E2D5); line-height: 1.8; margin-bottom: 1.5rem;">
-                The kitchen was designed for two kinds of people: those who love to cook, and those who love to entertain while someone else does. The main kitchen features dark custom cabinetry, a marble waterfall island, and professional-grade appliances throughout. The adjacent prep kitchen keeps the main space clean and guest-ready at all times.
+            <p<?php echo $cs_text_attrs('_cs_kitchen_copy', 'textarea'); ?> style="font-size: 15px; color: var(--color-text, #E8E2D5); line-height: 1.8; margin-bottom: 1.5rem;">
+                <?php echo esc_html($cs_text('_cs_kitchen_copy')); ?>
             </p>
             <p style="font-size: 13px; color: var(--color-text-muted, #7A7570); line-height: 1.7;">
-                <strong style="color: #D4AF37;">Design details:</strong> Custom dark cabinetry with brass hardware · Marble waterfall island · 62" integrated refrigerator · Dedicated prep kitchen · Walk-in pantry · Pot filler at range
+                <strong<?php echo $cs_text_attrs('_cs_kitchen_details_label'); ?> style="color: #D4AF37;"><?php echo esc_html($cs_text('_cs_kitchen_details_label')); ?></strong> <span<?php echo $cs_text_attrs('_cs_kitchen_details', 'textarea'); ?>><?php echo esc_html($cs_text('_cs_kitchen_details')); ?></span>
             </p>
         </div>
     </div>
@@ -272,18 +314,18 @@ while (have_posts()) : the_post();
 <!-- SECTION 07: Primary Suite -->
 <section class="cs-section cs-primary-suite section" style="padding: 5rem 0;">
     <div class="container" style="max-width: 1200px;">
-        <h2 class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
-            Primary Suite
+        <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_primary_title', 'text', $project_id); ?> class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
+            <?php echo esc_html(get_theme_mod('new_horizon_case_study_primary_title', 'Primary Suite')); ?>
         </h2>
         
         <!-- 2x2 Grid -->
-        <div class="cs-grid-2x2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="cs-grid-2x2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 2rem; margin-bottom: 2rem;">
             <?php if ($primary_bed) : ?>
             <div>
                 <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
                     <img src="<?php echo wp_get_attachment_url($primary_bed); ?>" alt="Primary Bedroom">
                 </div>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Primary Bedroom</h3>
+                <h3<?php echo $cs_text_attrs('_cs_primary_bed_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_primary_bed_label')); ?></h3>
             </div>
             <?php endif; ?>
             <?php if ($primary_bath) : ?>
@@ -307,14 +349,18 @@ while (have_posts()) : the_post();
                 <div class="cs-image-wrapper" style="margin-bottom: 1rem;">
                     <img src="<?php echo wp_get_attachment_url($primary_closet); ?>" alt="Walk-in Closet">
                 </div>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">His Walk-In Closet</h3>
+                <h3<?php echo $cs_text_attrs('_cs_primary_closet_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_primary_closet_label')); ?></h3>
             </div>
             <?php endif; ?>
         </div>
         
         <div class="cs-copy-block" style="max-width: 900px; margin: 0 auto;">
-            <p style="font-size: 15px; color: var(--color-text, #E8E2D5); line-height: 1.8;">
+            <p<?php echo $cs_text_attrs('_cs_primary_copy', 'textarea'); ?> style="font-size: 15px; color: var(--color-text, #E8E2D5); line-height: 1.8;">
+                <?php if (get_post_meta($project_id, '_cs_primary_copy', true) !== '') : ?>
+                    <?php echo esc_html($cs_text('_cs_primary_copy')); ?>
+                <?php else : ?>
                 The primary suite occupies its own wing of the upper level. Bedroom, spa-style bath, dual walk-in closets, and a private covered balcony overlooking the rear acreage. Every detail was chosen to feel like a retreat — not just a place to sleep.
+                <?php endif; ?>
             </p>
         </div>
     </div>
@@ -323,11 +369,11 @@ while (have_posts()) : the_post();
 <!-- SECTION 08: Office & Powder -->
 <section class="cs-section cs-office-powder section" style="background: var(--color-dark-2, #141414); padding: 5rem 0;">
     <div class="container" style="max-width: 1200px;">
-        <h2 class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
-            Home Office & Powder Room
+        <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_office_title', 'text', $project_id); ?> class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
+            <?php echo esc_html(get_theme_mod('new_horizon_case_study_office_title', 'Home Office & Powder Room')); ?>
         </h2>
         
-        <div class="cs-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div class="cs-two-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 2rem;">
             <!-- Office -->
             <div>
                 <?php if ($office_image) : ?>
@@ -335,7 +381,7 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($office_image); ?>" alt="Home Office">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Executive Home Office</h3>
+                <h3<?php echo $cs_text_attrs('_cs_office_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_office_label')); ?></h3>
             </div>
             
             <!-- Powder Room -->
@@ -345,7 +391,7 @@ while (have_posts()) : the_post();
                     <img src="<?php echo wp_get_attachment_url($powder_image); ?>" alt="Powder Room">
                 </div>
                 <?php endif; ?>
-                <h3 style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;">Powder Room</h3>
+                <h3<?php echo $cs_text_attrs('_cs_powder_label'); ?> style="font-size: 1rem; font-weight: 500; color: #D4AF37; margin-bottom: 0.25rem;"><?php echo esc_html($cs_text('_cs_powder_label')); ?></h3>
             </div>
         </div>
     </div>
@@ -374,11 +420,11 @@ $upper_rooms = array_filter(explode("\n", $fp_upper_rooms));
 ?>
 <section class="cs-section cs-floor-plans section" style="padding: 5rem 0; background: var(--color-dark-2, #141414);">
     <div class="container" style="max-width: 1100px;">
-        <h2 class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
-            Floor Plans
+        <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_floorplans_title', 'text', $project_id); ?> class="cs-section-title" style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 3rem; text-align: center;">
+            <?php echo esc_html(get_theme_mod('new_horizon_case_study_floorplans_title', 'Floor Plans')); ?>
         </h2>
         
-        <div class="cs-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="cs-two-col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 2rem; margin-bottom: 2rem;">
             <!-- Main Level -->
             <div class="cs-floor-plan-card" style="background: rgba(28,28,28,0.5); border: 1px solid rgba(184,149,42,0.15); border-radius: 4px; padding: 2rem;">
                 <h3 style="font-size: 1.25rem; font-weight: 600; color: #D4AF37; margin-bottom: 1.5rem; letter-spacing: 0.05em;">First Floor — Main Level</h3>
@@ -420,7 +466,7 @@ $upper_rooms = array_filter(explode("\n", $fp_upper_rooms));
         
         <div style="max-width: 900px; margin: 0 auto; padding: 1.5rem; background: rgba(20,20,20,0.4); border-left: 3px solid #D4AF37; border-radius: 3px;">
             <p style="font-size: 14px; color: #E8E2D5; line-height: 1.8; margin: 0;">
-                <?php echo wp_kses_post($fp_intro); ?>
+                <span<?php echo new_horizon_inline_edit_attrs('post_meta', '_cs_fp_intro', 'html', $project_id); ?>><?php echo wp_kses_post($fp_intro); ?></span>
             </p>
         </div>
     </div>
@@ -430,15 +476,14 @@ $upper_rooms = array_filter(explode("\n", $fp_upper_rooms));
 <section class="cs-section cs-cta section" style="background: var(--color-dark-2, #141414); padding: 5rem 0;">
     <div class="container" style="max-width: 800px;">
         <div class="case-study-cta" style="background: var(--color-dark-3, #1C1C1C); border: 1px solid rgba(184,149,42,0.18); border-radius: 4px; padding: 3rem 2rem; text-align: center;">
-            <h2 style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 1rem; line-height: 1.3;">
-                Your Home Should Be This Considered
+            <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_cta_title', 'text', $project_id); ?> style="font-family: var(--font-primary); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 400; color: #fff; margin-bottom: 1rem; line-height: 1.3;">
+                <?php echo esc_html(get_theme_mod('new_horizon_case_study_cta_title', 'Your Home Should Be This Considered')); ?>
             </h2>
             <p style="font-size: 14px; color: var(--color-text-muted, #7A7570); margin-bottom: 2rem; line-height: 1.7;">
-                <?php the_title(); ?> is one vision brought to life. Yours is next.<br>
-                Tell us where you want to build — and we'll show you what's possible.
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_cta_text', 'textarea', $project_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_case_study_cta_text', get_the_title() . ' is one vision brought to life. Yours is next. Tell us where you want to build - and we\'ll show you what\'s possible.')); ?></span>
             </p>
             <a href="<?php echo esc_url(home_url('/#contact')); ?>" class="btn btn-primary" style="display: inline-block; font-size: 12px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; padding: 14px 36px;">
-                Begin Your Project →
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_case_study_cta_button', 'text', $project_id); ?>><?php echo esc_html(get_theme_mod('new_horizon_case_study_cta_button', 'Begin Your Project ->')); ?></span>
             </a>
         </div>
     </div>
@@ -462,6 +507,36 @@ $upper_rooms = array_filter(explode("\n", $fp_upper_rooms));
 @media (max-width: 768px) {
     .case-study-hero {
         min-height: 70vh !important;
+    }
+
+    .cs-two-col,
+    .cs-grid-2x2 {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .cs-two-col > *,
+    .cs-grid-2x2 > * {
+        min-width: 0;
+    }
+
+    .cs-floor-plan-card {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .cs-image-wrapper,
+    .cs-two-col .cs-image-wrapper,
+    .cs-grid-2x2 .cs-image-wrapper {
+        height: auto !important;
+    }
+
+    .cs-image-wrapper img,
+    .cs-two-col .cs-image-wrapper img,
+    .cs-grid-2x2 .cs-image-wrapper img {
+        width: 100%;
+        height: auto !important;
+        max-width: 100%;
     }
     
     .case-study-stats {

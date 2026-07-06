@@ -7,14 +7,24 @@
  */
 
 get_header();
+
+if (new_horizon_page_has_visual_blocks()) {
+    new_horizon_render_visual_page_content();
+    get_footer();
+    return;
+}
+?>
+
+<?php
+$projects_page_id = get_queried_object_id();
 ?>
 
 <!-- Projects Hero Section -->
 <section class="page-hero" style="background: linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(26,26,26,0.95) 100%), url('<?php echo get_template_directory_uri(); ?>/images/hero-timber-home.jpg') center/cover;">
     <div class="container">
         <div class="page-hero-content">
-            <h1 class="page-title"><?php esc_html_e('Our Projects', 'timber-homes'); ?></h1>
-            <p class="page-description"><?php esc_html_e('Explore our portfolio of exceptional timber homes', 'timber-homes'); ?></p>
+            <h1<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_projects_page_title', 'text', $projects_page_id); ?> class="page-title"><?php echo esc_html(get_theme_mod('new_horizon_projects_page_title', 'Our Projects')); ?></h1>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_projects_page_description', 'textarea', $projects_page_id); ?> class="page-description"><?php echo esc_html(get_theme_mod('new_horizon_projects_page_description', 'Explore our portfolio of exceptional timber homes')); ?></p>
         </div>
     </div>
 </section>
@@ -48,7 +58,7 @@ get_header();
                             ?>
                         </div>
                         <div class="portfolio-overlay">
-                            <h3 class="portfolio-title"><?php the_title(); ?></h3>
+                            <h3<?php echo new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', get_the_ID()); ?> class="portfolio-title"><?php the_title(); ?></h3>
                         </div>
                     </a>
                     <?php

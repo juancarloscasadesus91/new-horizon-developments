@@ -124,7 +124,7 @@
     // ========================================
     const contactForm = document.getElementById('contactForm');
 
-    if (contactForm) {
+    if (contactForm && contactForm.dataset.wpAjax !== 'true') {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
 

@@ -8,6 +8,19 @@
  */
 
 get_header();
+
+if (new_horizon_page_has_visual_blocks()) {
+    new_horizon_render_visual_page_content();
+    get_footer();
+    return;
+}
+?>
+
+<?php
+$home_hero_title = get_theme_mod('new_horizon_home_hero_title', 'The Home You\'ve Been Imagining Deserves the Right Team to Build It');
+$home_hero_description = get_theme_mod('new_horizon_home_hero_description', 'Every home begins with understanding how you want to live.');
+$home_quote_label = get_theme_mod('new_horizon_home_quote_label', 'Request a Quote');
+$home_projects_label = get_theme_mod('new_horizon_home_projects_label', 'View Our Projects');
 ?>
 
 <!-- Hero Section -->
@@ -35,16 +48,14 @@ get_header();
                     }
                 ?>
                 </div>
-            <h1 class="hero-title"><?php esc_html_e('The Home You\'ve Been Imagining Deserves the Right Team to Build It', 'new-horizon'); ?></h1>
-            <p class="hero-description">
-                <?php esc_html_e('Every home begins with understanding how you want to live.', 'new-horizon'); ?>
-            </p>
+            <h1<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_hero_title', 'textarea'); ?> class="hero-title"><?php echo esc_html($home_hero_title); ?></h1>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_hero_description', 'textarea'); ?> class="hero-description"><?php echo esc_html($home_hero_description); ?></p>
             <div class="hero-buttons">
-                <a href="#contact" class="btn btn-primary"><?php esc_html_e('Request a Quote', 'timber-homes'); ?></a>
-                <a href="#portfolio" class="btn btn-outline"><?php esc_html_e('View Our Projects', 'timber-homes'); ?></a>
+                <a href="#contact" class="btn btn-primary"><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_quote_label'); ?>><?php echo esc_html($home_quote_label); ?></span></a>
+                <a href="#portfolio" class="btn btn-outline"><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_projects_label'); ?>><?php echo esc_html($home_projects_label); ?></span></a>
             </div>
             <?php $price_anchor = get_theme_mod('new_horizon_price_anchor', 'Custom residences from the $900s'); if ($price_anchor) : ?>
-            <p class="hero-price-anchor"><?php echo esc_html($price_anchor); ?></p>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_price_anchor'); ?> class="hero-price-anchor"><?php echo esc_html($price_anchor); ?></p>
             <?php endif; ?>
         </div>
     </div>
@@ -63,23 +74,23 @@ get_header();
             $stat4_label = get_theme_mod('new_horizon_stat4_label', 'Licensed & Insured');
             ?>
             <div class="credibility-item">
-                <span class="credibility-number"><?php echo esc_html($stat1_num); ?></span>
-                <span class="credibility-label"><?php echo esc_html($stat1_label); ?></span>
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_stat1_number'); ?> class="credibility-number"><?php echo esc_html($stat1_num); ?></span>
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_stat1_label'); ?> class="credibility-label"><?php echo esc_html($stat1_label); ?></span>
             </div>
             <div class="credibility-divider"></div>
             <div class="credibility-item">
-                <span class="credibility-number"><?php echo esc_html($stat2_num); ?></span>
-                <span class="credibility-label"><?php echo esc_html($stat2_label); ?></span>
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_stat2_number'); ?> class="credibility-number"><?php echo esc_html($stat2_num); ?></span>
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_stat2_label'); ?> class="credibility-label"><?php echo esc_html($stat2_label); ?></span>
             </div>
             <div class="credibility-divider"></div>
             <div class="credibility-item">
                 <span class="credibility-number"><i class="fas fa-map-marker-alt"></i></span>
-                <span class="credibility-label"><?php echo esc_html($stat3_label); ?></span>
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_stat3_label'); ?> class="credibility-label"><?php echo esc_html($stat3_label); ?></span>
             </div>
             <div class="credibility-divider"></div>
             <div class="credibility-item">
                 <span class="credibility-number"><i class="fas fa-shield-alt"></i></span>
-                <span class="credibility-label"><?php echo esc_html($stat4_label); ?></span>
+                <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_stat4_label'); ?> class="credibility-label"><?php echo esc_html($stat4_label); ?></span>
             </div>
         </div>
     </div>
@@ -89,9 +100,9 @@ get_header();
 <section class="services-section section" id="services">
     <div class="container">
         <div class="section-title">
-            <p class="section-subtitle"><?php esc_html_e('Our Process', 'timber-homes'); ?></p>
-            <h2><?php esc_html_e('Our Construction Services', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Comprehensive home construction solutions from design to completion', 'timber-homes'); ?></p>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_services_subtitle'); ?> class="section-subtitle"><?php echo esc_html(get_theme_mod('new_horizon_home_services_subtitle', 'Our Process')); ?></p>
+            <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_services_title'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_services_title', 'Our Construction Services')); ?></h2>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_services_description', 'textarea'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_services_description', 'Comprehensive home construction solutions from design to completion')); ?></p>
         </div>
 
         <div class="grid grid-3">
@@ -116,11 +127,11 @@ get_header();
                                 <i class="<?php echo esc_attr($icon); ?>"></i>
                             </div>
                         <?php endif; ?>
-                        <h3><?php the_title(); ?></h3>
+                        <h3<?php echo new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', get_the_ID()); ?>><?php the_title(); ?></h3>
                         <?php if ($short_desc) : ?>
-                            <p><?php echo esc_html($short_desc); ?></p>
+                            <p<?php echo new_horizon_inline_edit_attrs('post_meta', '_service_short_description', 'textarea', get_the_ID()); ?>><?php echo esc_html($short_desc); ?></p>
                         <?php else : ?>
-                            <p><?php echo esc_html(get_the_excerpt()); ?></p>
+                            <p<?php echo new_horizon_inline_edit_attrs('post_field', 'post_content', 'textarea', get_the_ID()); ?>><?php echo esc_html(get_the_excerpt()); ?></p>
                         <?php endif; ?>
                     </a>
                     <?php
@@ -147,10 +158,10 @@ get_header();
 <section class="about-cta-section section">
     <div class="container">
         <div class="cta-content">
-            <h2><?php esc_html_e('Ready to Start Your Project?', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Let\'s turn your vision into reality. Our team is ready to guide you through every step of the construction process.', 'timber-homes'); ?></p>
+            <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_services_cta_title'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_services_cta_title', 'Ready to Start Your Project?')); ?></h2>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_services_cta_text', 'textarea'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_services_cta_text', 'Let\'s turn your vision into reality. Our team is ready to guide you through every step of the construction process.')); ?></p>
             <div class="cta-buttons">
-                <a href="#contact" class="btn btn-primary"><?php esc_html_e('Request a Quote', 'timber-homes'); ?></a>
+                <a href="#contact" class="btn btn-primary"><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_services_cta_button'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_services_cta_button', 'Request a Quote')); ?></span></a>
             </div>
         </div>
     </div>
@@ -160,9 +171,9 @@ get_header();
 <section class="portfolio-section section" id="portfolio">
     <div class="container">
         <div class="section-title">
-            <p class="section-subtitle"><?php esc_html_e('Our Work', 'timber-homes'); ?></p>
-            <h2><?php esc_html_e('Featured Projects', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Explore our portfolio of stunning', 'timber-homes'); ?></p>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_portfolio_subtitle'); ?> class="section-subtitle"><?php echo esc_html(get_theme_mod('new_horizon_home_portfolio_subtitle', 'Our Work')); ?></p>
+            <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_portfolio_title'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_portfolio_title', 'Featured Projects')); ?></h2>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_portfolio_description', 'textarea'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_portfolio_description', 'Explore our portfolio of stunning')); ?></p>
         </div>
 
         <div class="portfolio-grid">
@@ -199,7 +210,7 @@ get_header();
                             ?>
                         </div>
                         <div class="portfolio-overlay">
-                            <h3 class="portfolio-title"><?php the_title(); ?></h3>
+                            <h3<?php echo new_horizon_inline_edit_attrs('post_field', 'post_title', 'text', get_the_ID()); ?> class="portfolio-title"><?php the_title(); ?></h3>
                         </div>
                     </a>
                     <?php
@@ -215,44 +226,53 @@ get_header();
 <section class="testimonials-section section" id="testimonials">
     <div class="container">
         <div class="section-title">
-            <p class="section-subtitle"><?php esc_html_e('Client Reviews', 'timber-homes'); ?></p>
-            <h2><?php esc_html_e('What Our Clients Say', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Real stories from real homeowners', 'timber-homes'); ?></p>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_testimonials_subtitle'); ?> class="section-subtitle"><?php echo esc_html(get_theme_mod('new_horizon_home_testimonials_subtitle', 'Client Reviews')); ?></p>
+            <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_testimonials_title'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_testimonials_title', 'What Our Clients Say')); ?></h2>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_testimonials_description', 'textarea'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_testimonials_description', 'Real stories from real homeowners')); ?></p>
         </div>
 
         <div class="testimonials-container">
             <?php
             $testimonials = array(
                 array(
-                    'content' => __('Building our home with New Horizon Developments was one of the best decisions we\'ve made. The entire process was smooth, transparent, and the craftsmanship exceeded every expectation. We couldn\'t be happier with the result.', 'timber-homes'),
-                    'name'    => 'Marcus & Danielle T.',
-                    'location' => 'Johns Creek, GA',
+                    'content_key'  => 'new_horizon_home_testimonial_1_content',
+                    'name_key'     => 'new_horizon_home_testimonial_1_name',
+                    'location_key' => 'new_horizon_home_testimonial_1_location',
+                    'content'      => 'Building our home with New Horizon Developments was one of the best decisions we\'ve made. The entire process was smooth, transparent, and the craftsmanship exceeded every expectation. We couldn\'t be happier with the result.',
+                    'name'         => 'Marcus & Danielle T.',
+                    'location'     => 'Johns Creek, GA',
                 ),
                 array(
-                    'content' => __('From our first conversation to the final walkthrough, the NHD team was professional, communicative, and genuinely invested in our vision. Our home is everything we dreamed it would be and more.', 'timber-homes'),
-                    'name'    => 'James & Priya R.',
-                    'location' => 'Atlanta, GA',
+                    'content_key'  => 'new_horizon_home_testimonial_2_content',
+                    'name_key'     => 'new_horizon_home_testimonial_2_name',
+                    'location_key' => 'new_horizon_home_testimonial_2_location',
+                    'content'      => 'From our first conversation to the final walkthrough, the NHD team was professional, communicative, and genuinely invested in our vision. Our home is everything we dreamed it would be and more.',
+                    'name'         => 'James & Priya R.',
+                    'location'     => 'Atlanta, GA',
                 ),
                 array(
-                    'content' => __('We\'ve worked with other builders before, but nothing compares to the attention to detail and personal service we received from New Horizon. They treated our home like it was their own.', 'timber-homes'),
-                    'name'    => 'Chris & Lauren M.',
-                    'location' => 'Buford, GA',
+                    'content_key'  => 'new_horizon_home_testimonial_3_content',
+                    'name_key'     => 'new_horizon_home_testimonial_3_name',
+                    'location_key' => 'new_horizon_home_testimonial_3_location',
+                    'content'      => 'We\'ve worked with other builders before, but nothing compares to the attention to detail and personal service we received from New Horizon. They treated our home like it was their own.',
+                    'name'         => 'Chris & Lauren M.',
+                    'location'     => 'Buford, GA',
                 ),
             );
 
             foreach ($testimonials as $testimonial) {
                 ?>
                 <div class="testimonial-card reveal">
-                    <div class="testimonial-content">
-                        <?php echo esc_html($testimonial['content']); ?>
+                    <div<?php echo new_horizon_inline_edit_attrs('theme_mod', $testimonial['content_key'], 'textarea'); ?> class="testimonial-content">
+                        <?php echo esc_html(get_theme_mod($testimonial['content_key'], $testimonial['content'])); ?>
                     </div>
                     <div class="testimonial-author">
                         <div class="testimonial-avatar">
                             <img src="<?php echo get_template_directory_uri(); ?>/images/avatar-placeholder.jpg" alt="<?php echo esc_attr($testimonial['name']); ?>">
                         </div>
                         <div class="testimonial-info">
-                            <h4><?php echo esc_html($testimonial['name']); ?></h4>
-                            <p><?php echo esc_html($testimonial['location']); ?></p>
+                            <h4<?php echo new_horizon_inline_edit_attrs('theme_mod', $testimonial['name_key']); ?>><?php echo esc_html(get_theme_mod($testimonial['name_key'], $testimonial['name'])); ?></h4>
+                            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', $testimonial['location_key']); ?>><?php echo esc_html(get_theme_mod($testimonial['location_key'], $testimonial['location'])); ?></p>
                             <div class="testimonial-rating">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
@@ -274,15 +294,15 @@ get_header();
 <section class="contact-section section" id="contact">
     <div class="container">
         <div class="section-title">
-            <p class="section-subtitle"><?php esc_html_e('Get In Touch', 'timber-homes'); ?></p>
-            <h2><?php esc_html_e('Let\'s Talk About Your Vision', 'timber-homes'); ?></h2>
-            <p><?php esc_html_e('Tell us about your project — we\'ll follow up within 24 hours.', 'timber-homes'); ?></p>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_contact_subtitle'); ?> class="section-subtitle"><?php echo esc_html(get_theme_mod('new_horizon_home_contact_subtitle', 'Get In Touch')); ?></p>
+            <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_contact_title'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_contact_title', 'Let\'s Talk About Your Vision')); ?></h2>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_contact_description', 'textarea'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_contact_description', 'Tell us about your project - we\'ll follow up within 24 hours.')); ?></p>
         </div>
 
         <div class="contact-grid">
             <!-- Contact Information -->
             <div class="contact-info">
-                <h3><?php esc_html_e('Reach Us Directly', 'timber-homes'); ?></h3>
+                <h3<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_contact_info_title'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_contact_info_title', 'Reach Us Directly')); ?></h3>
                 
                 <?php
                 $address = get_theme_mod('timber_homes_address', '134 Industrial Park Dr, Lawrenceville, GA');
@@ -296,8 +316,8 @@ get_header();
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
                     <div class="contact-details">
-                        <h4><?php esc_html_e('Our Office', 'timber-homes'); ?></h4>
-                        <p><?php echo nl2br(esc_html($address)); ?></p>
+                        <h4<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_office_label'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_office_label', 'Our Office')); ?></h4>
+                        <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'timber_homes_address', 'textarea'); ?>><?php echo nl2br(esc_html($address)); ?></p>
                     </div>
                 </div>
 
@@ -306,8 +326,8 @@ get_header();
                         <i class="fas fa-phone"></i>
                     </div>
                     <div class="contact-details">
-                        <h4><?php esc_html_e('Phone', 'timber-homes'); ?></h4>
-                        <p><?php echo esc_html($phone); ?><br><?php esc_html_e('Mon-Fri: 8am - 6pm MST', 'timber-homes'); ?></p>
+                        <h4<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_phone_label'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_phone_label', 'Phone')); ?></h4>
+                        <p><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'timber_homes_phone'); ?>><?php echo esc_html($phone); ?></span><br><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_contact_hours'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_contact_hours', 'Mon-Fri: 8am - 6pm MST')); ?></span></p>
                     </div>
                 </div>
 
@@ -316,17 +336,17 @@ get_header();
                         <i class="fas fa-envelope"></i>
                     </div>
                     <div class="contact-details">
-                        <h4><?php esc_html_e('Email', 'timber-homes'); ?></h4>
-                        <p><a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a></p>
+                        <h4<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_email_label'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_email_label', 'Email')); ?></h4>
+                        <p><a href="mailto:<?php echo esc_attr($email); ?>"><span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'timber_homes_email'); ?>><?php echo esc_html($email); ?></span></a></p>
                     </div>
                 </div>
 
                 <div class="quick-contact-buttons">
                     <a href="https://wa.me/<?php echo esc_attr($whatsapp); ?>" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">
-                        <i class="fab fa-whatsapp"></i> <?php esc_html_e('WhatsApp Us', 'timber-homes'); ?>
+                        <i class="fab fa-whatsapp"></i> <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_whatsapp_label'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_whatsapp_label', 'WhatsApp Us')); ?></span>
                     </a>
                     <a href="tel:<?php echo esc_attr(str_replace(array(' ', '(', ')', '-'), '', $phone)); ?>" class="btn btn-call">
-                        <i class="fas fa-phone-alt"></i> <?php esc_html_e('Call Now', 'timber-homes'); ?>
+                        <i class="fas fa-phone-alt"></i> <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_call_label'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_call_label', 'Call Now')); ?></span>
                     </a>
                 </div>
             </div>
@@ -334,8 +354,9 @@ get_header();
             <!-- Contact Form -->
             <div class="contact-form">
                 <div id="form-messages"></div>
-                <form id="contactForm" method="POST">
+                <form id="contactForm" method="POST" data-wp-ajax="true">
                     <?php wp_nonce_field('contact_form_nonce', 'contact_nonce'); ?>
+                    <input type="text" name="website" id="contact_website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute; left:-9999px;">
                     
                     <div class="form-group">
                         <label for="name"><?php esc_html_e('Full Name', 'timber-homes'); ?> *</label>
@@ -356,10 +377,31 @@ get_header();
                         <label for="service"><?php esc_html_e('Service Interested In', 'timber-homes'); ?></label>
                         <select id="service" name="service">
                             <option value=""><?php esc_html_e('Select a service', 'timber-homes'); ?></option>
-                            <option value="custom-design"><?php esc_html_e('Custom Home Design', 'timber-homes'); ?></option>
-                            <option value="full-construction"><?php esc_html_e('Full Construction', 'timber-homes'); ?></option>
-                            <option value="renovation"><?php esc_html_e('Renovation & Restoration', 'timber-homes'); ?></option>
-                            <option value="consultation"><?php esc_html_e('Free Consultation', 'timber-homes'); ?></option>
+                            <?php
+                            $contact_services = new WP_Query(array(
+                                'post_type'      => 'service',
+                                'posts_per_page' => -1,
+                                'orderby'        => 'meta_value_num',
+                                'meta_key'       => '_service_order',
+                                'order'          => 'ASC',
+                            ));
+
+                            if ($contact_services->have_posts()) :
+                                while ($contact_services->have_posts()) : $contact_services->the_post();
+                                    ?>
+                                    <option value="<?php echo esc_attr(get_the_title()); ?>"><?php the_title(); ?></option>
+                                    <?php
+                                endwhile;
+                                wp_reset_postdata();
+                            else :
+                                ?>
+                                <option value="custom-design"><?php esc_html_e('Custom Home Design', 'timber-homes'); ?></option>
+                                <option value="full-construction"><?php esc_html_e('Full Construction', 'timber-homes'); ?></option>
+                                <option value="renovation"><?php esc_html_e('Renovation & Restoration', 'timber-homes'); ?></option>
+                                <option value="consultation"><?php esc_html_e('Free Consultation', 'timber-homes'); ?></option>
+                                <?php
+                            endif;
+                            ?>
                         </select>
                     </div>
 
@@ -400,7 +442,8 @@ get_header();
                         email: $('#email').val(),
                         phone: $('#phone').val(),
                         service: $('#service').val(),
-                        message: $('#message').val()
+                        message: $('#message').val(),
+                        website: $('#contact_website').val()
                     };
                     
                     // Send AJAX request
@@ -442,9 +485,9 @@ get_header();
 <section class="instagram-section section">
     <div class="container">
         <div class="section-title">
-            <p class="section-subtitle"><?php esc_html_e('FOLLOW US', 'new-horizon'); ?></p>
-            <h2><?php esc_html_e('Instagram', 'new-horizon'); ?></h2>
-            <p><?php esc_html_e('See our latest projects and behind-the-scenes', 'new-horizon'); ?></p>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_instagram_subtitle'); ?> class="section-subtitle"><?php echo esc_html(get_theme_mod('new_horizon_home_instagram_subtitle', 'FOLLOW US')); ?></p>
+            <h2<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_instagram_title'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_instagram_title', 'Instagram')); ?></h2>
+            <p<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_instagram_description', 'textarea'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_instagram_description', 'See our latest projects and behind-the-scenes')); ?></p>
         </div>
         
         <div class="instagram-feed-wrapper">
@@ -461,7 +504,7 @@ get_header();
             if ($instagram_url && $instagram_url !== '#') :
             ?>
                 <a href="<?php echo esc_url($instagram_url); ?>" target="_blank" rel="noopener" class="btn btn-outline">
-                    <i class="fab fa-instagram"></i> <?php esc_html_e('Follow on Instagram', 'new-horizon'); ?>
+                    <i class="fab fa-instagram"></i> <span<?php echo new_horizon_inline_edit_attrs('theme_mod', 'new_horizon_home_instagram_button'); ?>><?php echo esc_html(get_theme_mod('new_horizon_home_instagram_button', 'Follow on Instagram')); ?></span>
                 </a>
             <?php endif; ?>
         </div>
